@@ -1,0 +1,7 @@
+
+public class State {
+
+	private int x;
+	private int y;
+	
+}

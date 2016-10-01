@@ -1,0 +1,88 @@
+
+public class Functions {
+
+	public static Node pop(Node QUEUE)
+	{
+		Node out = QUEUE;
+		QUEUE = QUEUE.nextInQUEUE;
+		out.nextInQUEUE = null;
+		return out;	
+	}
+	
+	public static void push(Node QUEUE, Node element)
+	{
+		Node iterator = QUEUE;
+		while (iterator.nextInQUEUE != null)
+			iterator = iterator.nextInQUEUE;
+		iterator.nextInQUEUE = element;
+		element.nextInQUEUE = null;
+	}
+	
+	public static void pushToKids(Node kids, Node newKid)
+	{
+		Node iterator = kids;
+		while (iterator.nextSibling != null)
+			iterator = iterator.nextSibling;
+		iterator.nextSibling = newKid;
+		newKid.nextSibling = null;
+	}
+	
+	public static void insert(Node QUEUE, Node element)
+	{
+		Node iterator = QUEUE;
+		int f = iterator.nextInQUEUE.getF();
+		while(f>element.getF() && iterator != null)
+		{
+			iterator = iterator.nextInQUEUE;
+			f = iterator.nextInQUEUE.getF();
+		}
+		Node temp = iterator.nextInQUEUE;
+		iterator.nextInQUEUE = element;
+		element.nextInQUEUE = temp;
+	}
+	
+	public static boolean isSolution(Node X)
+	{
+		//Check if solution
+		return false; //Return true if solution
+	}
+	
+	public static Node generateAllSuccessors(Node X)
+	{
+		//genAllSuccessors
+		Node SUCC = new Node();
+		return SUCC;
+	}
+	
+	public static void attachAndEval(Node C, Node P)
+	{
+		C.parent = P;
+		C.setG(P.getG() + arcCost(P,C));
+		C.calcH();
+		C.updateF();
+	}
+	
+	public static int arcCost(Node P, Node C)
+	{
+		//Calculate cost
+		int cost = 0;
+		return cost;
+	}
+	
+	public static void propagatePathImprovements(Node P)
+	{
+		Node C = P.kids;
+		while (C != null)
+		{
+			if((P.getG() + arcCost(P,C)) < C.getG())
+			{
+				C.parent = P;
+				C.setG(P.getG() + arcCost(P,C));
+				C.updateF();
+				propagatePathImprovements(C);
+			}
+			C = C.nextSibling;
+		}
+	}
+	
+}

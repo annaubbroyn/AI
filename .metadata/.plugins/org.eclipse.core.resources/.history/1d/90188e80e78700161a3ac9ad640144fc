@@ -1,0 +1,83 @@
+
+//import java.util.*;
+
+public class Node {
+	
+	private int g;
+	private int h;
+	private int f;
+	private State state;
+	public Node parent;
+	public Node kids;
+	public Node nextInQUEUE;
+	public Node nextSibling;
+	
+	public void print(){
+		//print node (state)
+	}
+	
+	public int arcCost(Node P){
+		return this.state.getArcCost();
+	}
+	
+	public void calcH(){ 
+		this.h = this.state.calcH(); 
+	}
+	
+	public void updateG(int g)
+	{
+		this.g = g;
+		Node kid = this.kids;
+		while(kid != null)
+		{
+			kid.updateG(g + kid.arcCost(this));
+			kid.updateF();
+			kid = kid.nextSibling;
+		}
+		
+	}
+	
+	public boolean generateNextSuccessor(Node succ)
+	{
+		succ.nextInQUEUE = new Node();
+		if(state.generateNextSuccessor(succ.getState()))
+			return true;
+		return false;
+	}
+	
+	public void updateF(){
+		this.f = this.g + this.h;
+	}
+	
+	public boolean isEqualTo(Node X){
+		if(this.state.isEqualTo(X.state))
+			return true;
+		return false;
+	}
+	
+	
+	public int getG() {
+		return g;
+	}
+	public int getH() {
+		return h;
+	}
+	public void setH(int h) {
+		this.h = h;
+	}
+	public int getF() {
+		return f;
+	}
+	public void setF(int f) {
+		this.f = f;
+	}
+
+	public State getState() {
+		return state;
+	}
+
+	public void setState(State state) {
+		this.state = state;
+	}
+
+}

@@ -1,23 +1,112 @@
 
-import java.util.*;
+//import java.util.*;
 
 public class Node {
 	
 	private int g;
 	private int h;
 	private int f;
-	private int numberOfKids;
-	public Node nextInQUEUE;
-	public Node nextSibling;
+	private State state;
+	private boolean isNull;
 	public Node parent;
 	public Node kids;
+	public Node nextInQUEUE;
+	public Node nextSibling;
+	
+	public Node(){
+		g=0;
+		h=0;
+		f=0;
+		state = null;
+		isNull = false;
+		parent = null;
+		kids = null;
+		nextInQUEUE = null;
+		nextSibling = null;
+	}
+	
+	public Node emptyNode(){
+		Node node = new Node();
+		node.isNull = true;
+		return node;
+	}
+	
+	public boolean isNull(){
+		return isNull;
+	}
+	public void setIsNull(boolean isNull){
+		this.isNull = isNull;
+	}
 	
 	public void print(){
-		//print node (state)
+		int board[][] = state.getBoard();
+
+		int empty_pos = 0;
+		int obstical_pos = 1;
+		int trace_pos = 2;
+		int start_pos = 3;
+		int final_pos = 4;
+
+		Node trace = this;
+		while(trace.parent != null)
+		{
+			board[trace.getState().getX()][trace.getState().getY()] = trace_pos;
+			trace = trace.parent;
+		}
+		board[trace.getState().getX()][trace.getState().getY()] = start_pos;
+		board[state.getFinalX()][state.getFinalY()] = final_pos;
+		for(int row = 0; row<state.getBoardHeight(); row++){
+			for(int col = 0; col<state.getBoardWidth(); col++){
+				if(board[row][col] == empty_pos)
+					System.out.print(".");
+				else if(board[row][col] == obstical_pos)
+					System.out.print("#");
+				else if(board[row][col] == trace_pos)
+					System.out.print("o");
+				else if(board[row][col] == start_pos)
+					System.out.print("A");
+				else if(board[row][col] == final_pos)
+					System.out.print("B");
+			}
+			System.out.print("\n");
+		}
+	}
+	
+	public int arcCost(Node P){
+		return this.state.getArcCost();
 	}
 	
 	public void calcH(){ 
-		//Make function	}
+		this.h = this.state.calcH(); 
+	}
+	
+	public void updateG(int g)
+	{
+		this.g = g;
+		Node kid = this.kids;
+		while(kid != null)
+		{
+			kid.updateG(g + kid.arcCost(this));
+			kid.updateF();
+			kid = kid.nextSibling;
+		}
+		
+	}
+	
+	public Node generateNextSuccessor(){
+		Node SUCC = new Node();
+		Node succ = SUCC;
+		succ.setState(state.generateFirstSuccessor());
+		succ.nextInQUEUE = new Node();
+		succ.nextInQUEUE.setState(state.generateNextSuccessor(succ.getState()));
+		while(succ.nextInQUEUE.getState() != null)
+		{
+			succ = succ.nextInQUEUE;
+			succ.nextInQUEUE = new Node();
+			succ.nextInQUEUE.setState(state.generateNextSuccessor(succ.getState()));
+		}
+		succ.nextInQUEUE = null;
+		return SUCC;
 	}
 	
 	public void updateF(){
@@ -25,16 +114,14 @@ public class Node {
 	}
 	
 	public boolean isEqualTo(Node X){
-		//Compare state
+		if(this.state.isEqualTo(X.state))
+			return true;
 		return false;
 	}
 	
 	
 	public int getG() {
 		return g;
-	}
-	public void setG(int g) {
-		this.g = g;
 	}
 	public int getH() {
 		return h;
@@ -48,11 +135,13 @@ public class Node {
 	public void setF(int f) {
 		this.f = f;
 	}
-	public int getNumberOfKids() {
-		return numberOfKids;
+
+	public State getState() {
+		return state;
 	}
-	public void setNumberOfKids(int numberOfKids) {
-		this.numberOfKids = numberOfKids;
+
+	public void setState(State state) {
+		this.state = state;
 	}
 
 }
