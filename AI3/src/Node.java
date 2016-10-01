@@ -7,12 +7,14 @@ public class Node {
 	private int h;
 	private int f;
 	private int numberOfKids;
-	private boolean isInOPEN;
-	private boolean isInCLOSED;
-	private Node nextInQueue;
+	public Node nextInQUEUE;
+	public Node nextSibling;
 	public Node parent;
-	public Node[] kids;
+	public Node kids;
 	
+	public void print(){
+		//print node (state)
+	}
 	
 	public void calcH(){ 
 		//Make function	}
@@ -22,8 +24,7 @@ public class Node {
 		this.f = this.g + this.h;
 	}
 	
-	public boolean isEqualTo(Node X)
-	{
+	public boolean isEqualTo(Node X){
 		//Compare state
 		return false;
 	}

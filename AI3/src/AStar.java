@@ -1,39 +1,46 @@
 
-import java.util.*;
+//import java.util.*;
 
 public class AStar {
 	
-	public static int MAX = 1000;
-	
-	public static Node pop(Node[] array, int size)
+	public static Node pop(Node QUEUE)
 	{
-		Node out = array[0];
-		for(int i = 0; i<size; i++)
-		{
-			array[i] = array[i+1];
-		}
+		Node out = QUEUE;
+		QUEUE = QUEUE.nextInQUEUE;
+		out.nextInQUEUE = null;
 		return out;	
 	}
 	
-	public static void push(Node[] array, Node element, int size)
+	public static void push(Node QUEUE, Node element)
 	{
-		array[size] = element;
+		Node iterator = QUEUE;
+		while (iterator.nextInQUEUE != null)
+			iterator = iterator.nextInQUEUE;
+		iterator.nextInQUEUE = element;
+		element.nextInQUEUE = null;
 	}
 	
-	public static void insert(Node[] array, Node element, int size)
+	public static void pushToKids(Node kids, Node newKid)
 	{
-		int i = 0;
-		int f = array[i].getF();
-		while(f>element.getF() && i<size)
+		Node iterator = kids;
+		while (iterator.nextSibling != null)
+			iterator = iterator.nextSibling;
+		iterator.nextSibling = newKid;
+		newKid.nextSibling = null;
+	}
+	
+	public static void insert(Node QUEUE, Node element)
+	{
+		Node iterator = QUEUE;
+		int f = iterator.nextInQUEUE.getF();
+		while(f>element.getF() && iterator != null)
 		{
-			i++;
-			f = array[i].getF();
+			iterator = iterator.nextInQUEUE;
+			f = iterator.nextInQUEUE.getF();
 		}
-		for(int j = 0; j<(size-i); j++)
-		{
-			array[size - j] = array[size - j - 1];
-		}
-		array[i] = element;
+		Node temp = iterator.nextInQUEUE;
+		iterator.nextInQUEUE = element;
+		element.nextInQUEUE = temp;
 	}
 	
 	public static boolean isSolution(Node X)
@@ -42,11 +49,10 @@ public class AStar {
 		return false; //Return true if solution
 	}
 	
-	public static Node[] generateAllSuccessors(Node X)
+	public static Node generateAllSuccessors(Node X)
 	{
 		//genAllSuccessors
-		int succ_size = 0;
-		Node[] SUCC = new Node[succ_size];
+		Node SUCC = new Node();
 		return SUCC;
 	}
 	
@@ -67,9 +73,9 @@ public class AStar {
 	
 	public static void propagatePathImprovements(Node P)
 	{
-		for(int i = 0; i<P.getNumberOfKids(); i++)
+		Node C = P.kids;
+		while (C != null)
 		{
-			Node C = P.kids[i];
 			if((P.getG() + arcCost(P,C)) < C.getG())
 			{
 				C.parent = P;
@@ -77,75 +83,75 @@ public class AStar {
 				C.updateF();
 				propagatePathImprovements(C);
 			}
+			C = C.nextSibling;
 		}
 	}
 	
-	public static Solution AStar_algorithm()
+	public static Node AStar_algorithm()
 	{
 		Node CLOSED = null;
 		Node OPEN = null;
-		Node OPEN_last = null;
-		Node CLOSED_last = null;
 		
 		Node n0 = new Node();
 		n0.setG(0);
 		n0.calcH();
 		n0.updateF();
 		OPEN = n0;
-		OPEN_last = n0;
 		
-		Solution solution = new Solution();
-		//int closed_size = 0;
-		//int open_size = 0;
 		while(true)
 		{
 			if(OPEN == null)
-				return solution;
+				return null;
 			Node X = pop(OPEN);
-			//open_size --;
-			push(CLOSED, X, closed_size);
-			closed_size ++;
-			kjb 
+			push(CLOSED, X);
 			if(isSolution(X))
+				return X;
+			
+			Node SUCCnode = generateAllSuccessors(X);
+			
+			while(SUCCnode != null)
 			{
-				solution.setX(X);
-				solution.setSuccess(true);
-				return solution;
-			}
-			Node SUCC[] = generateAllSuccessors(X);
-			for(int i = 0; i<SUCC.length; i++)
-			{
+				Node next = SUCCnode.nextInQUEUE;
 				boolean found_in_OPEN = false;
 				boolean found_in_CLOSED = false;
-				for(int j = 0; j<open_size; j++)
-					if(SUCC[i].isEqualTo(OPEN[j]))
+				Node iterator = OPEN;
+				while(iterator != null)
+				{
+					if(SUCCnode.isEqualTo(iterator))
 					{
-						SUCC[i] = OPEN[j];
+						SUCCnode = iterator;
 						found_in_OPEN = true;
 						break;
 					}
+					iterator = iterator.nextInQUEUE;
+				}
 				if(!found_in_OPEN)
-					for(int j = 0; j<closed_size; j++)
-						if(SUCC[j].isEqualTo(CLOSED[j]))
+				{
+					iterator = CLOSED;
+					while(iterator != null)
+					{
+						if(SUCCnode.isEqualTo(iterator))
 						{
-							SUCC[i] = CLOSED[j];
+							SUCCnode = iterator;
 							found_in_CLOSED = true;
 							break;
 						}
-				push(X.kids, SUCC[i], X.getNumberOfKids());
-				X.setNumberOfKids(X.getNumberOfKids() + 1);
+						iterator = iterator.nextInQUEUE;
+					}
+				}
+				pushToKids(X.kids, SUCCnode);
 				if(!found_in_OPEN && !found_in_CLOSED)
 				{
-					attachAndEval(SUCC[i], X);
-					insert(OPEN, SUCC[i], open_size);
-					open_size ++;
+					attachAndEval(SUCCnode, X);
+					insert(OPEN, SUCCnode);
 				}
-				else if((X.getG() + arcCost(X, SUCC[i])) < SUCC[i].getG())
+				else if((X.getG() + arcCost(X, SUCCnode)) < SUCCnode.getG())
 				{
-					attachAndEval(SUCC[i], X);
+					attachAndEval(SUCCnode, X);
 					if(found_in_CLOSED)
-						propagatePathImprovements(SUCC[i]);
+						propagatePathImprovements(SUCCnode);
 				}
+				SUCCnode = next;
 			}	
 		}
 	}
@@ -153,11 +159,15 @@ public class AStar {
 	public static void main(String[] args)
 	{
 		
-		Solution mySolution = AStar_algorithm();
-		if(mySolution.isSuccess())
-			System.out.println("A solution was found");
-		else
+		Node mySolution = AStar_algorithm();
+		if(mySolution == null)
 			System.out.println("Could not find solution");
+		else
+		{
+			System.out.println("A solution was found: ");
+			mySolution.print();
+		}
+
 		
 	}
 	
