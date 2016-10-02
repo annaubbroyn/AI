@@ -7,81 +7,154 @@ import java.util.List;
 
 public class State {
 
-	private State1 state1;
-	private State2 state2;
+	private int x;
+	private int y;
+	private int finalX;
+	private int finalY;
+	private int[][] board;
+	private int boardWidth;
+	private int boardHeight;
+	private int arcCost = 1;
 	
-	public void readState(String textfile){
-		if(state1 != null)
-			state1.readState(textfile);
-		else if(state2 != null)
-			state2.readState(textfile);
+	public void readState(String textfile)
+	{
+		board = new int[1000][1000];
+		Path boardpath = Paths.get(textfile);
+		String[] splitted;
+		try {
+			List<String> lines = Files.readAllLines(boardpath);
+			int row = 0;
+			for(String line:lines)
+			{
+				splitted = line.split("(?!^)");
+				boardWidth = splitted.length;
+				for(int col = 0; col < splitted.length; col++)
+				{
+					if(splitted[col].equals("."))
+						board[row][col] = 0;
+					else if(splitted[col].equals("#"))
+						board[row][col] = 1;
+					else if(splitted[col].equals("A"))
+					{
+						board[row][col] = 0;
+						x = col;
+						y = row;
+					}
+					else if(splitted[col].equals("B"))
+					{
+						board[row][col] = 0;
+						finalX = col;
+						finalY = row;
+					}
+				}
+				row++;
+			}
+			boardHeight = row;
+				
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 	
-	public boolean moreSuccessorsExist(State current){
-		if(state1 != null)
-			return state1.moreSuccessorsExist(current);
-		else if(state2 != null)
-			return state2.moreSuccessorsExist(current);
-		else
+	public boolean moreSuccessorsExist(State current)
+	{
+		if(current.getX() == x-1 && current.getY() == y)
 			return false;
+		return true;
 	}
 	
 	public State generateFirstSuccessor()
 	{
-		if(state1 != null)
-			return state1.generateFirstSuccessor();
-		else if(state2 != null)
-			return state2.generateFirstSuccessor();
-		return null;
+		State first = new State();
+		if(y>0 && board[y-1][x] == 0){
+			first.setX(x);
+			first.setY(y-1);
+		}else if((x+1)< boardWidth && board[y][x+1] == 0){
+			first.setX(x+1);
+			first.setY(y);
+		}else if((y+1) < boardHeight && board[y+1][x] == 0){
+			first.setX(x);
+			first.setY(y+1);
+		}else if(x>0 && board[y][x-1]== 0){
+			first.setX(x-1);
+			first.setY(y);
+		}else
+			return null;
+		first.setBoard(board);
+		first.setBoardWidth(boardWidth);
+		first.setBoardHeight(boardHeight);
+		first.setFinalX(finalX);
+		first.setFinalY(finalY);
+		return first;
 	}
 	
 	public State generateNextSuccessor(State current){
-		if(state1 != null)
-			return state1.generateNextSuccessor(current);
-		else if(state2 != null)
-			return state2.generateNextSuccessor(current);
+		if(current == null)
+			return null;
+		State next = new State();
+		next.setBoard(board);
+		next.setBoardWidth(boardWidth);
+		next.setBoardHeight(boardHeight);
+		next.setFinalX(finalX);
+		next.setFinalY(finalY);
+		if(current.getX() == x && current.getY() == y-1){
+			if((x+1)<boardWidth && board[y][x+1] == 0){
+				next.setX(x+1);
+				next.setY(y);
+				return next;
+			}else if((y+1)<boardHeight && board[y+1][x] == 0){
+				next.setX(x);
+				next.setY(y+1);
+				return next;
+			}else if(x>0 && board[y][x-1] == 0){
+				next.setX(x-1);
+				next.setY(y);
+				return next;
+			}else
+				return null;
+		}else if(current.getX() == x+1 && current.getY() == y){
+			if((y+1)<boardHeight && board[y+1][x] == 0){
+				next.setX(x);
+				next.setY(y+1);
+				return next;
+			}else if(x>0 && board[y][x-1] == 0){
+				next.setX(x-1);
+				next.setY(y);
+				return next;
+			}else
+				return null;
+		}else if(current.getX() == x && current.getY() == y+1 && x>0 && board[y][x-1] == 0 ){
+			next.setX(x-1);
+			next.setY(y);
+			return next;
+		}
 		return null;
 	}
 	
 	public boolean isSolution()
 	{
-		if(state1 != null)
-			return state1.isSolution();
-		else if(state2 != null)
-			return state2.isSolution();
+		if(x == finalX && y == finalY)
+			return true;
 		return false;
 	}
 	
 	public boolean isEqualTo(State S){
-		if(state1 != null)
-			return state1.isSolution();
-		else if(state2 != null)
-			return state2.isSolution();
+		if(this.x == S.getX() && this.y == S.getY())
+			return true;
 		return false;
 	}
 	
 	public int calcH(){
-		if(state1 != null)
-			return state1.calcH();
-		else if(state2 != null)
-			return state2.calcH();
-		return -1;
+		return (finalX-x)*(finalX-x) + (finalY-y)*(finalY-y);
 	}
 	
 	public int getArcCost(){
-		if(state1 != null)
-			return state1.getArcCost();
-		else if(state2 != null)
-			return state2.getArcCost();
-		return -1;
+		return arcCost;
 	}
-/*
 	public int getX() {
-		if(state1 != null)
-			return state1.getX();
-		else if(state2 != null)
-			return state2.getX();
-		return -1;
+		return x;
 	}
 	public void setX(int x) {
 		this.x = x;
@@ -108,15 +181,11 @@ public class State {
 	public void setFinalY(int finalY) {
 		this.finalY = finalY;
 	}
-*/
+
 	public int[][] getBoard() {
-		if(state1 != null)
-			return state1.getBoard();
-		else if(state2 != null)
-			return state2.getBoard();
-		return null;
+		return board;
 	}
-/*
+
 	public void setBoard(int[][] board) {
 		this.board = board;
 	}
@@ -136,5 +205,4 @@ public class State {
 	public void setBoardWidth(int boardWidth){
 		this.boardWidth = boardWidth;
 	}
-	*/
 }
