@@ -10,6 +10,14 @@ public class AStar {
 		return false;
 	}
 	
+	public static Node pop(Node QUEUE)
+	{
+		Node out = QUEUE;
+		QUEUE = QUEUE.nextInQUEUE;
+		out.nextInQUEUE = null;
+		return out;	
+	}
+	
 	public static void attachAndEval(Node C, Node P)
 	{
 		C.parent = P;
@@ -126,7 +134,7 @@ public class AStar {
 	
 	public static void main(String[] args)
 	{
-		String textfile = "boards/boards/board-1-5.txt";
+		String textfile = "boards/boards/board-1-4.txt";
 		State initialState = new State();
 		initialState.readState(textfile);
 		Node mySolution = AStar_algorithm(initialState);
