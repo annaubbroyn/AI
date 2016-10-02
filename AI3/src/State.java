@@ -68,16 +68,16 @@ public class State {
 	public State generateFirstSuccessor()
 	{
 		State first = new State();
-		if(board[y-1][x] == 0){
+		if(y>0 && board[y-1][x] == 0){
 			first.setX(x);
 			first.setY(y-1);
-		}else if(board[y][x+1] == 0){
+		}else if((x+1)< boardWidth && board[y][x+1] == 0){
 			first.setX(x+1);
 			first.setY(y);
-		}else if(board[y+1][x] == 0){
+		}else if((y+1) < boardHeight && board[y+1][x] == 0){
 			first.setX(x);
 			first.setY(y+1);
-		}else if(board[y][x-1]== 0){
+		}else if(x>0 && board[y][x-1]== 0){
 			first.setX(x-1);
 			first.setY(y);
 		}else
@@ -93,6 +93,8 @@ public class State {
 			return null;
 		State next = new State();
 		next.setBoard(board);
+		next.setBoardWidth(boardWidth);
+		next.setBoardHeight(boardHeight);
 		next.setFinalX(finalX);
 		next.setFinalY(finalY);
 		if(current.getX() == x && current.getY() == y-1){
@@ -121,7 +123,7 @@ public class State {
 				return next;
 			}else
 				return null;
-		}else if(current.getX() == x && current.getY() == y+1 && board[y][x-1] == 0 && (y+1)<boardHeight){
+		}else if(current.getX() == x && current.getY() == y+1 && board[y][x-1] == 0 && x>0){
 			next.setX(x-1);
 			next.setY(y);
 			return next;
@@ -143,7 +145,7 @@ public class State {
 	}
 	
 	public int calcH(){
-		return (finalX-x)^2 + (finalY-y)^2;
+		return (finalX-x)*(finalX-x) + (finalY-y)*(finalY-y);
 	}
 	
 	public int getArcCost(){
@@ -194,4 +196,11 @@ public class State {
 		return boardWidth;
 	}
 	
+	public void setBoardHeight(int boardHeight){
+		this.boardHeight = boardHeight;
+	}
+	
+	public void setBoardWidth(int boardWidth){
+		this.boardWidth = boardWidth;
+	}
 }

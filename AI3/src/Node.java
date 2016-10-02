@@ -78,20 +78,20 @@ public class Node {
 	public void insert(Node element)
 	{
 		Node iterator = this;
-		if(iterator.getF()>element.getF())
+		if(f>element.getF())
+			element.nextInQUEUE = this;
+		else if(nextInQUEUE == null)
 		{
-			element.nextInQUEUE = iterator;
-			changeToNode(element);
+			nextInQUEUE = element;
+			element.nextInQUEUE = null;
 		}
-		else if(iterator.nextInQUEUE == null)
-			iterator.nextInQUEUE = element;
 		else{
-			int f = iterator.nextInQUEUE.getF();
-			while(f>element.getF() && iterator.nextInQUEUE != null)
+			int nextf = nextInQUEUE.getF();
+			while(nextf<element.getF() && iterator.nextInQUEUE != null)
 			{
 				iterator = iterator.nextInQUEUE;
 				if(iterator.nextInQUEUE != null)
-					f = iterator.nextInQUEUE.getF();
+					nextf = iterator.nextInQUEUE.getF();
 			}
 			Node temp = iterator.nextInQUEUE;
 			iterator.nextInQUEUE = element;
@@ -135,7 +135,11 @@ public class Node {
 		return this.state.getArcCost();
 	}
 	public void calcH(){ 
-		this.h = this.state.calcH(); 
+		h = state.calcH(); 
+/*if(state.getX() == 10)
+	System.out.print("h: " + h + "\n");
+else
+	System.out.print("x is not 10 \n");*/
 	}
 	public void updateG(int g)
 	{
@@ -144,6 +148,7 @@ public class Node {
 		while(kid != null)
 		{
 			kid.updateG(g + kid.arcCost(this));
+			kid.calcH();
 			kid.updateF();
 			kid = kid.nextSibling;
 		}
@@ -176,9 +181,7 @@ public class Node {
 	public boolean isEqualTo(Node X){
 		if(X.state == null)
 			return false;
-		if(this.state.isEqualTo(X.state))
-			return true;
-		return false;
+		return this.state.isEqualTo(X.state);
 	}
 	public int getG() {
 		return g;

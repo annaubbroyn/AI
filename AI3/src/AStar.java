@@ -36,8 +36,8 @@ public class AStar {
 	
 	public static Node AStar_algorithm(State initialState)
 	{
-		Node CLOSED = new Node();
-		Node OPEN = new Node();
+		Node CLOSED = null;
+		Node OPEN = null;//new Node();
 		
 		Node n0 = new Node();
 		n0.setState(initialState);
@@ -47,14 +47,15 @@ public class AStar {
 		n0.setIsEmpty(false);
 		OPEN = n0;
 		
-int count = 0;
+//int count = 0;
+//int COUNT = 2;
 		
 		while(true)
 		{
-count ++;
-			if(OPEN.isEmpty() == true)
+//count ++;
+			if(OPEN == null)
 				return null;
-			Node X = OPEN.pop();
+			Node X = OPEN.pop();			
 			
 			if(CLOSED == null)
 				CLOSED = X;
@@ -63,18 +64,31 @@ count ++;
 			
 			if(isSolution(X))
 				return X;
-//if(count == 4){
+//if(count == COUNT){
 System.out.print("\n(x,y): (" + X.getState().getX() + "," + X.getState().getY() + ")\n");
-n0.print();
+//n0.print();
 //}
+System.out.print("h: " + X.getH() + "\n");
+System.out.print("g: " + X.getG() + "\n");
+System.out.print("f: " + X.getF() + "\n");
 			
 			Node SUCCnode = X.generateAllSuccessors();
-			
+//int count = 0;
 			while(SUCCnode != null)
 			{
-//if(count == 4)
-System.out.print("SUCC: (" + SUCCnode.getState().getX() +"," + SUCCnode.getState().getY() +")\n");
+				
+//System.out.print(count++ + "\n");
+/*if(SUCCnode.getState() == null)
+	System.out.print("For count = " + count + ": Succnode.state is null\n");
+				
+if(count == COUNT)
+	System.out.print("SUCC: (" + SUCCnode.getState().getX() +"," + SUCCnode.getState().getY() +")\n");
+	*/			
 				Node next = SUCCnode.nextInQUEUE;
+
+//if(count == COUNT)
+//	System.out.print("succ of (" + SUCCnode.getState().getX() + "," + SUCCnode.getState().getY() + ") is (" + next.getState().getX() + "," + next.getState().getY() + ")\n");
+				
 				boolean found_in_OPEN = false;
 				boolean found_in_CLOSED = false;
 				
@@ -95,6 +109,9 @@ System.out.print("SUCC: (" + SUCCnode.getState().getX() +"," + SUCCnode.getState
 					iterator = CLOSED;
 					while(iterator != null)
 					{
+						//System.out.print("C");
+						//if(count == COUNT)
+							//System.out.print("iterator is (" + iterator.getState().getX() + "," + iterator.getState().getY() +")\n");
 						if(SUCCnode.isEqualTo(iterator))
 						{
 							SUCCnode = iterator;
@@ -109,17 +126,31 @@ System.out.print("SUCC: (" + SUCCnode.getState().getX() +"," + SUCCnode.getState
 					X.kids = SUCCnode;
 				else
 					X.pushToKids(SUCCnode);
-				
-				if(!found_in_OPEN && !found_in_CLOSED)
-				{
+if(found_in_OPEN)
+	System.out.print("found in OPEN \n");
+else if(found_in_CLOSED)
+	System.out.print("found in CLOSED \n");
+else
+	System.out.print("Not found in any \n");
+				if(!found_in_OPEN && !found_in_CLOSED){
+if(SUCCnode.getState().getX() == 10)
+	System.out.print("x is 10 in not found\n");
+else
+	System.out.print("x is not 10 in not found\n");
 					attachAndEval(SUCCnode, X);
 					if(OPEN.isEmpty())
 						OPEN = SUCCnode;
-					else
+					else{
 						OPEN.insert(SUCCnode);
+						if(OPEN == SUCCnode.nextInQUEUE)
+							OPEN = SUCCnode;
+					}
 				}
-				else if((X.getG() + SUCCnode.arcCost(X)) < SUCCnode.getG())
-				{
+				else if((X.getG() + SUCCnode.arcCost(X)) < SUCCnode.getG()){
+if(SUCCnode.getState().getX() == 10)
+	System.out.print("x is 10 in found and better\n");
+else
+	System.out.print("x is not 10 in found and better\n");
 					attachAndEval(SUCCnode, X);
 					if(found_in_CLOSED)
 						propagatePathImprovements(SUCCnode);
