@@ -8,6 +8,7 @@ public class Node {
 	private int f;
 	private State state;
 	private boolean isNull;
+	private boolean isEmpty;
 	public Node parent;
 	public Node kids;
 	public Node nextInQUEUE;
@@ -23,21 +24,80 @@ public class Node {
 		kids = null;
 		nextInQUEUE = null;
 		nextSibling = null;
+		isEmpty = true;
 	}
-	
 	public Node emptyNode(){
 		Node node = new Node();
 		node.isNull = true;
 		return node;
-	}
-	
+	}	
 	public boolean isNull(){
 		return isNull;
 	}
 	public void setIsNull(boolean isNull){
 		this.isNull = isNull;
 	}
-	
+	public void changeToNode(Node newNode){
+		g=newNode.getG();
+		h=newNode.getH();
+		f=newNode.getF();
+		state = newNode.getState();
+		isNull = newNode.isNull;
+		parent = newNode.parent;
+		kids = newNode.kids;
+		nextInQUEUE = newNode.nextInQUEUE;
+		nextSibling = newNode.nextSibling;
+	}
+	public Node pop()
+	{
+		Node out = this;
+		if(nextInQUEUE == null)
+			isEmpty = true;
+		else{
+			changeToNode(nextInQUEUE);
+			out.nextInQUEUE = null;
+		}
+		return out;	
+	}
+	public void push(Node element)
+	{
+		Node iterator = this;
+		while (iterator.nextInQUEUE != null)
+			iterator = iterator.nextInQUEUE;
+		iterator.nextInQUEUE = element;
+		element.nextInQUEUE = null;			
+	}
+	public void pushToKids(Node newKid)
+	{
+		Node iterator = kids;
+		while (iterator.nextSibling != null)
+			iterator = iterator.nextSibling;
+		iterator.nextSibling = newKid;
+		newKid.nextSibling = null;			
+	}
+	public void insert(Node element)
+	{
+		Node iterator = this;
+		if(iterator.getF()>element.getF())
+		{
+			element.nextInQUEUE = iterator;
+			changeToNode(element);
+		}
+		else if(iterator.nextInQUEUE == null)
+			iterator.nextInQUEUE = element;
+		else{
+			int f = iterator.nextInQUEUE.getF();
+			while(f>element.getF() && iterator.nextInQUEUE != null)
+			{
+				iterator = iterator.nextInQUEUE;
+				if(iterator.nextInQUEUE != null)
+					f = iterator.nextInQUEUE.getF();
+			}
+			Node temp = iterator.nextInQUEUE;
+			iterator.nextInQUEUE = element;
+			element.nextInQUEUE = temp;
+		}
+	}
 	public void print(){
 		int board[][] = state.getBoard();
 
@@ -71,15 +131,12 @@ public class Node {
 			System.out.print("\n");
 		}
 	}
-	
 	public int arcCost(Node P){
 		return this.state.getArcCost();
 	}
-	
 	public void calcH(){ 
 		this.h = this.state.calcH(); 
 	}
-	
 	public void updateG(int g)
 	{
 		this.g = g;
@@ -92,34 +149,37 @@ public class Node {
 		}
 		
 	}
-	
-	public Node generateNextSuccessor(){
+	public Node generateAllSuccessors(){
 		Node SUCC = new Node();
 		Node succ = SUCC;
 		succ.setState(state.generateFirstSuccessor());
+		if(succ.getState()!= null)
+			succ.setIsEmpty(false);
 		succ.nextInQUEUE = new Node();
 		succ.nextInQUEUE.setState(state.generateNextSuccessor(succ.getState()));
+		if(succ.nextInQUEUE.getState() != null)
+			succ.nextInQUEUE.setIsEmpty(false);
 		while(succ.nextInQUEUE.getState() != null)
 		{
 			succ = succ.nextInQUEUE;
 			succ.nextInQUEUE = new Node();
 			succ.nextInQUEUE.setState(state.generateNextSuccessor(succ.getState()));
+			if(succ.nextInQUEUE.getState() != null)
+				succ.nextInQUEUE.setIsEmpty(false);
 		}
 		succ.nextInQUEUE = null;
 		return SUCC;
 	}
-	
 	public void updateF(){
 		this.f = this.g + this.h;
 	}
-	
 	public boolean isEqualTo(Node X){
+		if(X.state == null)
+			return false;
 		if(this.state.isEqualTo(X.state))
 			return true;
 		return false;
 	}
-	
-	
 	public int getG() {
 		return g;
 	}
@@ -135,13 +195,17 @@ public class Node {
 	public void setF(int f) {
 		this.f = f;
 	}
-
 	public State getState() {
 		return state;
 	}
-
 	public void setState(State state) {
 		this.state = state;
+	}	
+	public boolean isEmpty(){
+		return isEmpty;
+	}	
+	public void setIsEmpty(boolean isEmpty){
+		this.isEmpty = isEmpty;
 	}
 
 }
