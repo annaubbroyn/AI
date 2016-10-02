@@ -124,8 +124,8 @@ public class AStar {
 	
 	public static void main(String[] args)
 	{
-		String inputfile = "boards/boards/board-test.txt";
-		String outputfile = "solutions/solution-test.txt";
+		String inputfile = "boards/boards/board-1-2.txt";
+		String outputfile = "solutions/solution-1-2.txt";
 		State initialState = new State();
 		initialState.readState(inputfile);
 		Node mySolution = AStar_algorithm(initialState);

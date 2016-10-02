@@ -70,21 +70,19 @@ public class Node {
 			int board[][] = state.getBoard();
 			int traceX[] = new int[1000];
 			int traceY[] = new int[1000];
+			
 
-			int tracePos = 0;
-			int startMarker = -2;
-			int finalMarker = -3;
+			int trace_pos = 0;
+			int start_pos = -2;
+			int final_pos = -3;
 			Node trace = this;
 			while(trace.parent != null)
 			{
-				traceX[tracePos] = trace.getState().getX();
-				traceY[tracePos++] = trace.getState().getY();
+				board[trace.getState().getY()][trace.getState().getX()] = trace_pos;
 				trace = trace.parent;
 			}
-			board[trace.getState().getY()][trace.getState().getX()] = startMarker;
-			board[state.getFinalY()][state.getFinalX()] = finalMarker;
-			writer.println(Arrays.toString(Arrays.copyOfRange(traceX, 0, tracePos)));
-			writer.println(Arrays.toString(Arrays.copyOfRange(traceY, 0, tracePos)));
+			board[trace.getState().getY()][trace.getState().getX()] = start_pos;
+			board[state.getFinalY()][state.getFinalX()] = final_pos;
 			for(int row = 0; row<state.getBoardHeight(); row++){
 				writer.println(Arrays.toString(Arrays.copyOfRange(board[row], 0, state.getBoardWidth())));
 			}
