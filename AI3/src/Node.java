@@ -4,12 +4,10 @@ import java.io.*;
 
 public class Node {
 	
-	private int g;
-	private int h;
-	private int f;
+	private double g;
+	private double h;
+	private double f;
 	private State state;
-	private boolean isNull;
-	private boolean isEmpty;
 	public Node parent;
 	public Node kids;
 	public Node nextInQUEUE;
@@ -20,34 +18,10 @@ public class Node {
 		h=0;
 		f=0;
 		state = null;
-		isNull = false;
 		parent = null;
 		kids = null;
 		nextInQUEUE = null;
 		nextSibling = null;
-		isEmpty = true;
-	}
-	public Node emptyNode(){
-		Node node = new Node();
-		node.isNull = true;
-		return node;
-	}	
-	public boolean isNull(){
-		return isNull;
-	}
-	public void setIsNull(boolean isNull){
-		this.isNull = isNull;
-	}
-	public void changeToNode(Node newNode){
-		g=newNode.getG();
-		h=newNode.getH();
-		f=newNode.getF();
-		state = newNode.getState();
-		isNull = newNode.isNull;
-		parent = newNode.parent;
-		kids = newNode.kids;
-		nextInQUEUE = newNode.nextInQUEUE;
-		nextSibling = newNode.nextSibling;
 	}
 
 	public void push(Node element)
@@ -77,7 +51,7 @@ public class Node {
 			element.nextInQUEUE = null;
 		}
 		else{
-			int nextf = nextInQUEUE.getF();
+			double nextf = nextInQUEUE.getF();
 			while(nextf<element.getF() && iterator.nextInQUEUE != null)
 			{
 				iterator = iterator.nextInQUEUE;
@@ -95,12 +69,9 @@ public class Node {
 
 			int board[][] = state.getBoard();
 
-			int empty_pos = 0;
-			int obstical_pos = 1;
-			int trace_pos = 2;
-			int start_pos = 3;
-			int final_pos = 4;
-
+			int trace_pos = 0;
+			int start_pos = -2;
+			int final_pos = -3;
 			Node trace = this;
 			while(trace.parent != null)
 			{
@@ -111,20 +82,6 @@ public class Node {
 			board[state.getFinalY()][state.getFinalX()] = final_pos;
 			for(int row = 0; row<state.getBoardHeight(); row++){
 				writer.println(Arrays.toString(Arrays.copyOfRange(board[row], 0, state.getBoardWidth())));
-				for(int col = 0; col<state.getBoardWidth(); col++){
-					if(board[row][col] == start_pos)
-						System.out.print("A");
-					else if(board[row][col] == final_pos)
-						System.out.print("B");
-					else if(board[row][col] == empty_pos)
-						System.out.print(".");
-					else if(board[row][col] == obstical_pos)
-						System.out.print("#");
-					else if(board[row][col] == trace_pos)
-						System.out.print("o");
-					
-				}
-				System.out.print("\n");
 			}
 			writer.close();
 
@@ -134,17 +91,16 @@ public class Node {
 			}
 	
 	public int arcCost(Node P){
-		return this.state.getArcCost();
+		return state.getArcCost();
 	}
 	public void calcH(){ 
 		h = state.calcH(); 
 	}
-	public void updateG(int g)
+	public void updateG(double g)
 	{
 		this.g = g;
-		Node kid = this.kids;
-		while(kid != null)
-		{
+		Node kid = kids;
+		while(kid != null){
 			kid.updateG(g + kid.arcCost(this));
 			kid.calcH();
 			kid.updateF();
@@ -156,19 +112,13 @@ public class Node {
 		Node SUCC = new Node();
 		Node succ = SUCC;
 		succ.setState(state.generateFirstSuccessor());
-		if(succ.getState()!= null)
-			succ.setIsEmpty(false);
 		succ.nextInQUEUE = new Node();
 		succ.nextInQUEUE.setState(state.generateNextSuccessor(succ.getState()));
-		if(succ.nextInQUEUE.getState() != null)
-			succ.nextInQUEUE.setIsEmpty(false);
 		while(succ.nextInQUEUE.getState() != null)
 		{
 			succ = succ.nextInQUEUE;
 			succ.nextInQUEUE = new Node();
 			succ.nextInQUEUE.setState(state.generateNextSuccessor(succ.getState()));
-			if(succ.nextInQUEUE.getState() != null)
-				succ.nextInQUEUE.setIsEmpty(false);
 		}
 		succ.nextInQUEUE = null;
 		return SUCC;
@@ -181,16 +131,16 @@ public class Node {
 			return false;
 		return this.state.isEqualTo(X.state);
 	}
-	public int getG() {
+	public double getG() {
 		return g;
 	}
-	public int getH() {
+	public double getH() {
 		return h;
 	}
 	public void setH(int h) {
 		this.h = h;
 	}
-	public int getF() {
+	public double getF() {
 		return f;
 	}
 	public void setF(int f) {
@@ -202,11 +152,5 @@ public class Node {
 	public void setState(State state) {
 		this.state = state;
 	}	
-	public boolean isEmpty(){
-		return isEmpty;
-	}	
-	public void setIsEmpty(boolean isEmpty){
-		this.isEmpty = isEmpty;
-	}
 
 }

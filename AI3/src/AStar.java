@@ -1,6 +1,4 @@
 
-//import java.util.*;
-
 public class AStar {
 	
 	public static boolean isSolution(Node X)
@@ -126,19 +124,17 @@ public class AStar {
 	
 	public static void main(String[] args)
 	{
-		String inputfile = "boards/boards/board-1-2.txt";
-		String outputfile = "solutions/solution-1-2.txt";
+		String inputfile = "boards/boards/board-1-4.txt";
+		String outputfile = "solutions/solution-1-4.txt";
 		State initialState = new State();
 		initialState.readState(inputfile);
 		Node mySolution = AStar_algorithm(initialState);
 		if(mySolution == null)
 			System.out.println("Could not find a solution");
-		else
-		{
-			System.out.println("A solution was found: \n");
+		else{
+			System.out.println("A solution was found");
 			mySolution.print(outputfile);
 		}
-		
 	}
 	
 }

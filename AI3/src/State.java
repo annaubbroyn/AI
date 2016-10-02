@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class State {
-
+	
 	private int x;
 	private int y;
 	private int finalX;
@@ -14,11 +14,12 @@ public class State {
 	private int[][] board;
 	private int boardWidth;
 	private int boardHeight;
-	private int arcCost = 1;
+	private int arcCost;
 	
 	public void readState(String textfile)
 	{
 		board = new int[1000][1000];
+		arcCost = 0;
 		Path boardpath = Paths.get(textfile);
 		String[] splitted;
 		try {
@@ -31,55 +32,56 @@ public class State {
 				for(int col = 0; col < splitted.length; col++)
 				{
 					if(splitted[col].equals("."))
-						board[row][col] = 0;
-					else if(splitted[col].equals("#"))
 						board[row][col] = 1;
-					else if(splitted[col].equals("A"))
-					{
+					else if(splitted[col].equals("#"))
+						board[row][col] = -1;
+					else if(splitted[col].equals("A")){
 						board[row][col] = 0;
 						x = col;
 						y = row;
-					}
-					else if(splitted[col].equals("B"))
-					{
+					}else if(splitted[col].equals("B")){
 						board[row][col] = 0;
 						finalX = col;
 						finalY = row;
-					}
+					}else if(splitted[col].equals("w"))
+						board[row][col] = 100;
+					else if(splitted[col].equals("m"))
+						board[row][col] = 50;
+					else if(splitted[col].equals("f"))
+						board[row][col] = 10;
+					else if(splitted[col].equals("g"))
+						board[row][col] = 5;
+					else if(splitted[col].equals("r"))
+						board[row][col] = 1;
 				}
 				row++;
 			}
 			boardHeight = row;
-				
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 	}
 	
-	public boolean moreSuccessorsExist(State current)
-	{
-		if(current.getX() == x-1 && current.getY() == y)
-			return false;
-		return true;
-	}
-	
 	public State generateFirstSuccessor()
 	{
 		State first = new State();
-		if(y>0 && board[y-1][x] == 0){
+		if(y>0 && board[y-1][x] != -1){
 			first.setX(x);
 			first.setY(y-1);
-		}else if((x+1)< boardWidth && board[y][x+1] == 0){
+			first.setArcCost(board[y-1][x]);
+		}else if((x+1)< boardWidth && board[y][x+1] != -1){
 			first.setX(x+1);
 			first.setY(y);
-		}else if((y+1) < boardHeight && board[y+1][x] == 0){
+			first.setArcCost(board[y][x+1]);
+		}else if((y+1) < boardHeight && board[y+1][x] != -1){
 			first.setX(x);
 			first.setY(y+1);
-		}else if(x>0 && board[y][x-1]== 0){
+			first.setArcCost(board[y+1][x]);
+		}else if(x>0 && board[y][x-1] != -1){
 			first.setX(x-1);
 			first.setY(y);
+			first.setArcCost(board[y][x-1]);
 		}else
 			return null;
 		first.setBoard(board);
@@ -100,41 +102,46 @@ public class State {
 		next.setFinalX(finalX);
 		next.setFinalY(finalY);
 		if(current.getX() == x && current.getY() == y-1){
-			if((x+1)<boardWidth && board[y][x+1] == 0){
+			if((x+1)<boardWidth && board[y][x+1] != -1){
 				next.setX(x+1);
 				next.setY(y);
+				next.setArcCost(board[y][x+1]);
 				return next;
-			}else if((y+1)<boardHeight && board[y+1][x] == 0){
+			}else if((y+1)<boardHeight && board[y+1][x] != -1){
 				next.setX(x);
 				next.setY(y+1);
+				next.setArcCost(board[y+1][x]);
 				return next;
-			}else if(x>0 && board[y][x-1] == 0){
+			}else if(x>0 && board[y][x-1] != -1){
 				next.setX(x-1);
 				next.setY(y);
+				next.setArcCost(board[y][x-1]);
 				return next;
 			}else
 				return null;
-		}else if(current.getX() == x+1 && current.getY() == y){
-			if((y+1)<boardHeight && board[y+1][x] == 0){
+		}else if(current.getX() == x+1 && current.getY() != -1){
+			if((y+1)<boardHeight && board[y+1][x] != -1){
 				next.setX(x);
 				next.setY(y+1);
+				next.setArcCost(board[y+1][x]);
 				return next;
-			}else if(x>0 && board[y][x-1] == 0){
+			}else if(x>0 && board[y][x-1] != -1){
 				next.setX(x-1);
 				next.setY(y);
+				next.setArcCost(board[y][x-1]);
 				return next;
 			}else
 				return null;
-		}else if(current.getX() == x && current.getY() == y+1 && x>0 && board[y][x-1] == 0 ){
+		}else if(current.getX() == x && current.getY() == y+1 && x>0 && board[y][x-1] != -1 ){
 			next.setX(x-1);
 			next.setY(y);
+			next.setArcCost(board[y][x-1]);
 			return next;
 		}
 		return null;
 	}
 	
-	public boolean isSolution()
-	{
+	public boolean isSolution(){
 		if(x == finalX && y == finalY)
 			return true;
 		return false;
@@ -146,8 +153,8 @@ public class State {
 		return false;
 	}
 	
-	public int calcH(){
-		return (finalX-x)*(finalX-x) + (finalY-y)*(finalY-y);
+	public double calcH(){
+		return Math.sqrt((finalX-x)*(finalX-x) + (finalY-y)*(finalY-y));
 	}
 	
 	public int getArcCost(){
@@ -204,5 +211,9 @@ public class State {
 	
 	public void setBoardWidth(int boardWidth){
 		this.boardWidth = boardWidth;
+	}
+	
+	public void setArcCost(int arcCost){
+		this.arcCost = arcCost;
 	}
 }
