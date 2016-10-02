@@ -49,7 +49,7 @@ public class State {
 				}
 				row++;
 			}
-			boardHeight = row + 1;
+			boardHeight = row;
 				
 			
 		} catch (IOException e) {
@@ -83,6 +83,8 @@ public class State {
 		}else
 			return null;
 		first.setBoard(board);
+		first.setBoardWidth(boardWidth);
+		first.setBoardHeight(boardHeight);
 		first.setFinalX(finalX);
 		first.setFinalY(finalY);
 		return first;
@@ -98,32 +100,32 @@ public class State {
 		next.setFinalX(finalX);
 		next.setFinalY(finalY);
 		if(current.getX() == x && current.getY() == y-1){
-			if(board[y][x+1] == 0 && (x+1)<boardWidth){
+			if((x+1)<boardWidth && board[y][x+1] == 0){
 				next.setX(x+1);
 				next.setY(y);
 				return next;
-			}else if(board[y+1][x] == 0 && (y+1)<boardHeight){
+			}else if((y+1)<boardHeight && board[y+1][x] == 0){
 				next.setX(x);
 				next.setY(y+1);
 				return next;
-			}else if(board[y][x-1] == 0 && (x-1)>0){
+			}else if(x>0 && board[y][x-1] == 0){
 				next.setX(x-1);
 				next.setY(y);
 				return next;
 			}else
 				return null;
 		}else if(current.getX() == x+1 && current.getY() == y){
-			if(board[y+1][x] == 0 && (y+1)<boardHeight){
+			if((y+1)<boardHeight && board[y+1][x] == 0){
 				next.setX(x);
 				next.setY(y+1);
 				return next;
-			}else if(board[y][x-1] == 0 && (x-1)>0){
+			}else if(x>0 && board[y][x-1] == 0){
 				next.setX(x-1);
 				next.setY(y);
 				return next;
 			}else
 				return null;
-		}else if(current.getX() == x && current.getY() == y+1 && board[y][x-1] == 0 && x>0){
+		}else if(current.getX() == x && current.getY() == y+1 && x>0 && board[y][x-1] == 0 ){
 			next.setX(x-1);
 			next.setY(y);
 			return next;
