@@ -108,15 +108,11 @@ public class State {
 	public void setFinalY(int finalY) {
 		this.finalY = finalY;
 	}
-*/
+
 	public int[][] getBoard() {
-		if(state1 != null)
-			return state1.getBoard();
-		else if(state2 != null)
-			return state2.getBoard();
-		return null;
+		return board;
 	}
-/*
+
 	public void setBoard(int[][] board) {
 		this.board = board;
 	}

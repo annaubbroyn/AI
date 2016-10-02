@@ -49,39 +49,24 @@ public class State {
 			return state1.isSolution();
 		else if(state2 != null)
 			return state2.isSolution();
-		return false;
+		return null;
 	}
 	
 	public boolean isEqualTo(State S){
-		if(state1 != null)
-			return state1.isSolution();
-		else if(state2 != null)
-			return state2.isSolution();
+		if(this.x == S.getX() && this.y == S.getY())
+			return true;
 		return false;
 	}
 	
 	public int calcH(){
-		if(state1 != null)
-			return state1.calcH();
-		else if(state2 != null)
-			return state2.calcH();
-		return -1;
+		return (finalX-x)*(finalX-x) + (finalY-y)*(finalY-y);
 	}
 	
 	public int getArcCost(){
-		if(state1 != null)
-			return state1.getArcCost();
-		else if(state2 != null)
-			return state2.getArcCost();
-		return -1;
+		return arcCost;
 	}
-/*
 	public int getX() {
-		if(state1 != null)
-			return state1.getX();
-		else if(state2 != null)
-			return state2.getX();
-		return -1;
+		return x;
 	}
 	public void setX(int x) {
 		this.x = x;
@@ -108,15 +93,11 @@ public class State {
 	public void setFinalY(int finalY) {
 		this.finalY = finalY;
 	}
-*/
+
 	public int[][] getBoard() {
-		if(state1 != null)
-			return state1.getBoard();
-		else if(state2 != null)
-			return state2.getBoard();
-		return null;
+		return board;
 	}
-/*
+
 	public void setBoard(int[][] board) {
 		this.board = board;
 	}
@@ -136,5 +117,4 @@ public class State {
 	public void setBoardWidth(int boardWidth){
 		this.boardWidth = boardWidth;
 	}
-	*/
 }
