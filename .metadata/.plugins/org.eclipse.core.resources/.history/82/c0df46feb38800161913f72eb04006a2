@@ -126,17 +126,16 @@ public class AStar {
 	
 	public static void main(String[] args)
 	{
-		String inputfile = "boards/boards/board-1-2.txt";
-		String outputfile = "solutions/solution-1-2.txt";
+		String textfile = "boards/boards/board-1-5.txt";
 		State initialState = new State();
-		initialState.readState(inputfile);
+		initialState.readState(textfile);
 		Node mySolution = AStar_algorithm(initialState);
 		if(mySolution == null)
 			System.out.println("Could not find a solution");
 		else
 		{
 			System.out.println("A solution was found: \n");
-			mySolution.print(outputfile);
+			mySolution.print();
 		}
 		
 	}

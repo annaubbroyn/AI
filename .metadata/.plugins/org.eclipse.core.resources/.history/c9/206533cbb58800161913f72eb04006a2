@@ -110,19 +110,18 @@ public class Node {
 			board[trace.getState().getY()][trace.getState().getX()] = start_pos;
 			board[state.getFinalY()][state.getFinalX()] = final_pos;
 			for(int row = 0; row<state.getBoardHeight(); row++){
-				writer.println(Arrays.toString(Arrays.copyOfRange(board[row], 0, state.getBoardWidth())));
+				writer.println(Arrays.toString(Arrays.copyOfRange(board[row], 0, state.getBoardWidth()-1)).replaceAll(", [ ]", ""));
 				for(int col = 0; col<state.getBoardWidth(); col++){
-					if(board[row][col] == start_pos)
-						System.out.print("A");
-					else if(board[row][col] == final_pos)
-						System.out.print("B");
-					else if(board[row][col] == empty_pos)
+					if(board[row][col] == empty_pos)
 						System.out.print(".");
 					else if(board[row][col] == obstical_pos)
 						System.out.print("#");
 					else if(board[row][col] == trace_pos)
 						System.out.print("o");
-					
+					else if(board[row][col] == start_pos)
+						System.out.print("A");
+					else if(board[row][col] == final_pos)
+						System.out.print("B");
 				}
 				System.out.print("\n");
 			}
