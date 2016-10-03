@@ -80,20 +80,22 @@ public class Node {
 			int board[][] = state.getBoard();
 			int pathX[] = new int[1000]; //x-position of path
 			int pathY[] = new int[1000]; //y-position of path
+
+			int pathIndex = 0;
+			int startMarker = -2;
+			int finalMarker = -3;
 			
 			//Initializing path to be at the final position and tracking path using best parent
 			Node path = this;
-			int pathIndex = 0;
 			while(path.parent != null){
 				pathX[pathIndex] = path.getState().getX();
 				pathY[pathIndex++] = path.getState().getY();
 				path = path.parent;
 			}
-			//Printing x- and y-coordinates of path in the beginning of file
+			board[path.getState().getY()][path.getState().getX()] = startMarker;
+			board[state.getFinalY()][state.getFinalX()] = finalMarker;
 			writer.println(Arrays.toString(Arrays.copyOfRange(pathX, 0, pathIndex)));
 			writer.println(Arrays.toString(Arrays.copyOfRange(pathY, 0, pathIndex)));
-			
-			//Printing board to file
 			for(int row = 0; row<state.getBoardHeight(); row++){
 				writer.println(Arrays.toString(Arrays.copyOfRange(board[row], 0, state.getBoardWidth())));
 			}
@@ -104,18 +106,14 @@ public class Node {
 		} 
 			}
 	
-	//Calculating cost from moving from parent node, P, to this node
 	public int arcCost(Node P){
 		return state.getArcCost();
 	}
-	
-	//Calculating estimated cost from this node to final node
 	public void calcH(){ 
 		h = state.calcH(); 
 	}
-	
-	//Updating the cost from root node to this node, and also updating all costs for all children
-	public void updateG(double g){
+	public void updateG(double g)
+	{
 		this.g = g;
 		Node kid = kids;
 		while(kid != null){
@@ -126,21 +124,12 @@ public class Node {
 		}
 		
 	}
-	
-	//Generating all successors of this node
 	public Node generateAllSuccessors(){
-		//SUCC is the queue with all successors
 		Node SUCC = new Node();
-		
-		//Generating first successor, succ, and placing it in the SUCC queue
 		Node succ = SUCC;
 		succ.setState(state.generateFirstSuccessor());
-		
-		//Generating second successor, succ, and placing it in the SUCC queue
 		succ.nextInQUEUE = new Node();
 		succ.nextInQUEUE.setState(state.generateNextSuccessor(succ.getState()));
-		
-		//Generating the rest of the successor, succ, and placing it in the SUCC queue
 		while(succ.nextInQUEUE.getState() != null)
 		{
 			succ = succ.nextInQUEUE;
@@ -148,17 +137,16 @@ public class Node {
 			succ.nextInQUEUE.setState(state.generateNextSuccessor(succ.getState()));
 		}
 		succ.nextInQUEUE = null;
-		
-		//Returning the SUCC queue
 		return SUCC;
 	}
-	
-	//Updating the f value for this node, s (f(s) = g(s) + h(s))
 	public void updateF(){
 		this.f = this.g + this.h;
 	}
-	
-	//Setter and getters
+	public boolean isEqualTo(Node X){
+		if(X.state == null)
+			return false;
+		return this.state.isEqualTo(X.state);
+	}
 	public double getG() {
 		return g;
 	}
@@ -180,9 +168,11 @@ public class Node {
 	public void setState(State state) {
 		this.state = state;
 	}
+
 	public int getStatus() {
 		return status;
 	}
+
 	public void setStatus(int status) {
 		this.status = status;
 	}	

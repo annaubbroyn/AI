@@ -38,11 +38,11 @@ public class State {
 					else if(splitted[col].equals("#"))
 						board[row][col] = -1;
 					else if(splitted[col].equals("A")){
-						board[row][col] = -2;
+						board[row][col] = 0;
 						x = col;
 						y = row;
 					}else if(splitted[col].equals("B")){
-						board[row][col] = -3;
+						board[row][col] = 0;
 						finalX = col;
 						finalY = row;
 					}else if(splitted[col].equals("w"))
@@ -60,7 +60,7 @@ public class State {
 			}
 			boardHeight = row;
 			calcId();
-			calcNumOfStates();
+			numOfStates = boardWidth*boardHeight;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -73,14 +73,6 @@ public class State {
 	
 	public int getId(){
 		return id;
-	}
-	
-	public void calcNumOfStates(){
-		numOfStates = boardWidth * boardHeight;
-	}
-	
-	public int getNumOfStates(){
-		return numOfStates;
 	}
 	
 	public State generateFirstSuccessor()
@@ -110,7 +102,6 @@ public class State {
 		first.setFinalX(finalX);
 		first.setFinalY(finalY);
 		first.calcId();
-		first.calcNumOfStates();
 		return first;
 	}
 	
@@ -123,7 +114,6 @@ public class State {
 		next.setBoardHeight(boardHeight);
 		next.setFinalX(finalX);
 		next.setFinalY(finalY);
-		next.calcNumOfStates();
 		if(current.getX() == x && current.getY() == y-1){
 			if((x+1)<boardWidth && board[y][x+1] != -1){
 				next.setX(x+1);

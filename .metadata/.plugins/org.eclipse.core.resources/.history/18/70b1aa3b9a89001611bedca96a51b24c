@@ -158,7 +158,12 @@ public class Node {
 		this.f = this.g + this.h;
 	}
 	
-	//Setter and getters
+	//Checking if 
+	public boolean isEqualTo(Node X){
+		if(X.state == null)
+			return false;
+		return this.state.isEqualTo(X.state);
+	}
 	public double getG() {
 		return g;
 	}
@@ -180,9 +185,11 @@ public class Node {
 	public void setState(State state) {
 		this.state = state;
 	}
+
 	public int getStatus() {
 		return status;
 	}
+
 	public void setStatus(int status) {
 		this.status = status;
 	}	
