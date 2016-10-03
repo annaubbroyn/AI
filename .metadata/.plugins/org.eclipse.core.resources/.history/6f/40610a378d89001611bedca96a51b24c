@@ -1,7 +1,7 @@
 
 public class AStar {
-	static int open = 1;
-	static int closed = 2;
+	static int open = 0;
+	static int closed = 1;
 	
 	public static boolean isSolution(Node X)
 	{
@@ -76,9 +76,9 @@ public class AStar {
 				boolean found_in_OPEN = false;
 				boolean found_in_CLOSED = false;
 				
-				if(hashTable[SUCCnode.getState().getId()] != null)
+				//Should use hash table instead
+				if(hashTable[SUCCnode.getState().getId()].getState().getId() == SUCCnode.getState().getId())
 					SUCCnode = hashTable[SUCCnode.getState().getId()];
-
 				if(SUCCnode.getStatus() == open)
 					found_in_OPEN = true;
 				else if(SUCCnode.getStatus() == closed)

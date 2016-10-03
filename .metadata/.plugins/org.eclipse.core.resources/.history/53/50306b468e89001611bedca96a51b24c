@@ -1,7 +1,7 @@
 
 public class AStar {
-	static int open = 1;
-	static int closed = 2;
+	static int open = 0;
+	static int closed = 1;
 	
 	public static boolean isSolution(Node X)
 	{
@@ -56,6 +56,7 @@ public class AStar {
 			
 			X = OPEN;
 			OPEN = OPEN.nextInQUEUE;
+System.out.print("X: (" + X.getState().getX() + "," + X.getState().getY() + ")\n");
 			
 			if(CLOSED == null)
 				CLOSED = X;
@@ -76,9 +77,11 @@ public class AStar {
 				boolean found_in_OPEN = false;
 				boolean found_in_CLOSED = false;
 				
-				if(hashTable[SUCCnode.getState().getId()] != null)
+				if(hashTable[SUCCnode.getState().getId()] == null)
+					hashTable[SUCCnode.getState().getId()] = SUCCnode;
+				else
 					SUCCnode = hashTable[SUCCnode.getState().getId()];
-
+				
 				if(SUCCnode.getStatus() == open)
 					found_in_OPEN = true;
 				else if(SUCCnode.getStatus() == closed)
@@ -114,8 +117,8 @@ public class AStar {
 	
 	public static void main(String[] args)
 	{
-		String inputfile = "boards/boards/board-test.txt";
-		String outputfile = "solutions/solution-test.txt";
+		String inputfile = "boards/boards/board-1-1.txt";
+		String outputfile = "solutions/solution-1-1.txt";
 		State initialState = new State();
 		initialState.readState(inputfile);
 		Node mySolution = AStar_algorithm(initialState);

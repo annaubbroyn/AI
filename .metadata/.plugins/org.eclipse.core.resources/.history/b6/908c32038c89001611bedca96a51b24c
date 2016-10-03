@@ -1,7 +1,5 @@
 
 public class AStar {
-	static int open = 1;
-	static int closed = 2;
 	
 	public static boolean isSolution(Node X)
 	{
@@ -36,9 +34,10 @@ public class AStar {
 	
 	public static Node AStar_algorithm(State initialState)
 	{
+		int open = 0;
+		int closed = 1;
 		Node CLOSED = null;
 		Node OPEN = null;
-		Node hashTable[] = new Node[initialState.getBoardWidth()*initialState.getBoardHeight()];
 		
 		Node X = new Node();
 		X.setState(initialState);
@@ -46,7 +45,8 @@ public class AStar {
 		X.calcH();
 		X.updateF();
 		OPEN = X;
-		X.setStatus(open);
+		
+		Node hashTable[] = new Node[initialState.getBoardWidth()*initialState.getBoardHeight()];
 		hashTable[X.getState().getId()] = X;
 		
 		while(true)
@@ -61,6 +61,8 @@ public class AStar {
 				CLOSED = X;
 			else
 				CLOSED.push(X);
+				
+			hashTable[X.getState().getId()] = X;
 			X.setStatus(closed);
 			
 			if(isSolution(X))
@@ -76,13 +78,31 @@ public class AStar {
 				boolean found_in_OPEN = false;
 				boolean found_in_CLOSED = false;
 				
-				if(hashTable[SUCCnode.getState().getId()] != null)
-					SUCCnode = hashTable[SUCCnode.getState().getId()];
-
-				if(SUCCnode.getStatus() == open)
-					found_in_OPEN = true;
-				else if(SUCCnode.getStatus() == closed)
-					found_in_CLOSED = true;
+				//Should use hash table instead
+				Node iterator = OPEN;
+				while(iterator != null)
+				{
+					if(SUCCnode.isEqualTo(iterator)){
+						SUCCnode = iterator;
+						found_in_OPEN = true;
+						break;
+					}
+					iterator = iterator.nextInQUEUE;
+				}
+				if(!found_in_OPEN)
+				{
+					iterator = CLOSED;
+					while(iterator != null)
+					{
+						if(SUCCnode.isEqualTo(iterator))
+						{
+							SUCCnode = iterator;
+							found_in_CLOSED = true;
+							break;
+						}
+						iterator = iterator.nextInQUEUE;
+					}
+				}
 				
 				if(X.kids == null)
 					X.kids = SUCCnode;
@@ -98,8 +118,6 @@ public class AStar {
 						if(OPEN == SUCCnode.nextInQUEUE)
 							OPEN = SUCCnode;
 					}
-					hashTable[SUCCnode.getState().getId()]=SUCCnode;
-					SUCCnode.setStatus(open);
 				}
 				else if((X.getG() + SUCCnode.arcCost(X)) < SUCCnode.getG()){
 					attachAndEval(SUCCnode, X);

@@ -8,7 +8,6 @@ public class Node {
 	private double h;
 	private double f;
 	private State state;
-	private int status;
 	public Node parent;
 	public Node kids;
 	public Node nextInQUEUE;
@@ -157,14 +156,6 @@ public class Node {
 	}
 	public void setState(State state) {
 		this.state = state;
-	}
-
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
 	}	
 
 }
