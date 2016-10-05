@@ -1,5 +1,5 @@
 folder = 'C:\Users\Anna\Documents\GitHub\AI\AI3\solutions\';
-name = 'solution-test.txt';
+name = 'solution-2-2.txt';
 fullname = [folder name];
 data = importdata(fullname);
 [rows,m] = size(data);
@@ -21,7 +21,6 @@ for i = 1:length(x)
 end
 for i = 3:rows
     line = strsplit(data{i,1},{', ','[',']'});
-    disp(line)
     for j = 2:length(line)-1
         if(str2double(line{j}) == -1)
             obstical(i-2,j-1) = 1;

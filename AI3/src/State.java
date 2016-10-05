@@ -7,26 +7,30 @@ import java.util.List;
 
 public class State {
 	
-	private int x;
-	private int y;
-	private int finalX;
-	private int finalY;
-	private int[][] board;
-	private int boardWidth;
-	private int boardHeight;
-	private int arcCost;
-	private int id;
-	private int numOfStates;
+	public static int MAX = 1000;	//Maximum width and height of board
+	private int x;					//x-coordinate of current position
+	private int y;					//y-coordinate of current position
+	private int finalX;				//x-coordinate of goal position
+	private int finalY;				//x-coordinate of goal position
+	private int[][] board;			//Board[row][col] containing the cost at each position
+	private int boardWidth;			//Width of board
+	private int boardHeight;		//Height of board
+	private int arcCost;			//The cost at the current position
+	private int id;					//The ID of the state. ID = y*boardWidth+x;
+	private int numOfStates;		//Total number of possible states = boardWidth*boardHeight
 	
+	//Initial state read from file
 	public void readState(String textfile)
 	{
-		board = new int[1000][1000];
-		arcCost = 0;
+	
 		Path boardpath = Paths.get(textfile);
-		String[] splitted;
+		
 		try {
 			List<String> lines = Files.readAllLines(boardpath);
+			String[] splitted;
 			int row = 0;
+			board = new int[MAX][MAX];
+			arcCost = 0;
 			for(String line:lines)
 			{
 				splitted = line.split("(?!^)");

@@ -2,8 +2,13 @@
 public class AStar {
 	
 	//Variables defining a node as open or closed 
+	public static int ASTAR = 1;
+	public static int BFS = 2;
+	public static int DIJKSTRA = 3;
+	
 	static int open = 1;
 	static int closed = 2;
+	static int METHOD = BFS; 
 	
 	//Checking if the node X is a solution of the problem
 	public static boolean isSolution(Node X){
@@ -15,7 +20,7 @@ public class AStar {
 	//Giving parent to the node C and calculating the costs
 	public static void attachAndEval(Node C, Node P){
 		C.parent = P;
-		C.updateG(P.getG() + C.arcCost(P));
+		C.updateG(P.getG() + C.arcCost(P),0);
 		C.calcH();
 		C.updateF();
 	}
@@ -26,7 +31,7 @@ public class AStar {
 		while (C != null){
 			if((P.getG() + C.arcCost(P)) < C.getG()){
 				C.parent = P;
-				C.updateG(P.getG() + C.arcCost(P));
+				C.updateG(P.getG() + C.arcCost(P),0);
 				C.updateF();
 				propagatePathImprovements(C);
 			}
@@ -47,7 +52,7 @@ public class AStar {
 		//Initializing first node,X
 		Node X = new Node();
 		X.setState(initialState);
-		X.updateG(0);
+		X.updateG(0,0);
 		X.calcH();
 		X.updateF();
 		
@@ -63,9 +68,11 @@ public class AStar {
 			if(OPEN == null)
 				return null;
 			
-			//Poping node from OPEN
+			//Popping node from OPEN
 			X = OPEN;
 			OPEN = OPEN.nextInQUEUE;
+			
+System.out.print("X: (" + X.getState().getX() + "," + X.getState().getY() + ")\n");
 			
 			//If X is a solution return the state X
 			if(isSolution(X))
@@ -104,7 +111,7 @@ public class AStar {
 					if(OPEN == null)
 						OPEN = SUCCnode;
 					else{
-						OPEN.insert(SUCCnode);
+						OPEN.insert(SUCCnode, METHOD);
 						if(OPEN == SUCCnode.nextInQUEUE)
 							OPEN = SUCCnode;
 					}
@@ -127,8 +134,8 @@ public class AStar {
 	public static void main(String[] args)
 	{
 		//Getting/setting input/output files
-		String inputfile = "boards/boards/board-test.txt";
-		String outputfile = "solutions/solution-test.txt";
+		String inputfile = "boards/boards/board-2-2.txt";
+		String outputfile = "solutions/solution-2-2.txt";
 		
 		//Reading initial state from input file
 		State initialState = new State();
