@@ -61,6 +61,9 @@ public class AStar {
 		X.setStatus(open);
 		hashTable[X.getState().getId()] = X;
 		
+		Node SUCCnode = new Node();
+		Node next = new Node();
+
 		//Running through the queues to find solution
 		while(true)
 		{
@@ -72,27 +75,44 @@ public class AStar {
 			X = OPEN;
 			OPEN = OPEN.nextInQUEUE;
 			
-System.out.print("X: (" + X.getState().getX() + "," + X.getState().getY() + ")\n");
-			
-			//If X is a solution return the state X
-			if(isSolution(X))
-				return X;
-			
 			//Pushing node to CLOSED and setting status to "closed"
 			if(CLOSED == null)
 				CLOSED = X;
 			else
 				CLOSED.push(X);
 			X.setStatus(closed);
+/*if(count++ == 0){
+Node openNode = OPEN;
+Node closedNode = CLOSED;
+System.out.println("\nX: (" + X.getState().getX() + "," + X.getState().getY() + ")\n");
+System.out.print("\nOPEN: \n");
+while(openNode != null && openNode.nextInQUEUE != null){
+	System.out.print("(" + openNode.getState().getX() + "," + openNode.getState().getY() + ")\n");
+	openNode = openNode.nextInQUEUE;
+}
+System.out.print("\nCLOSED: \n");
+while(closedNode != null && closedNode.nextInQUEUE != null){
+	System.out.print("(" + closedNode.getState().getX() + "," + closedNode.getState().getY() + ")\n");
+	closedNode = closedNode.nextInQUEUE;
+}
+}*/
+			//If X is a solution return the state X
+			if(isSolution(X)){
+				X.finalOPEN = OPEN;
+				X.finalCLOSED = CLOSED;
+				return X;
+			}
+			
+System.out.print(X.getState().getId() + ": (" + X.getState().getX() + "," + X.getState().getY() + ")\n");
 			
 			//Generating all successors of X and queue them in SUCCnode
-			Node SUCCnode = X.generateAllSuccessors();
+			SUCCnode = X.generateAllSuccessors();
 
 			//Run through all of X's successors SUCCnode
 			while(SUCCnode != null)
 			{	
 				//pop SUCCnode out of successor-queue and keep the rest of the queue in next 
-				Node next = SUCCnode.nextInQUEUE;
+				next = SUCCnode.nextInQUEUE;
 				SUCCnode.nextInQUEUE = null;
 				
 				//Using hash table to check if successor is in OPEN or CLOSED
@@ -112,7 +132,7 @@ System.out.print("X: (" + X.getState().getX() + "," + X.getState().getY() + ")\n
 						OPEN = SUCCnode;
 					else{
 						OPEN.insert(SUCCnode, METHOD);
-						if(OPEN == SUCCnode.nextInQUEUE)
+						if(METHOD != BFS && OPEN == SUCCnode.nextInQUEUE) //Means that OPEN has not been updated yet, but should be equal to SUCCnode
 							OPEN = SUCCnode;
 					}
 					hashTable[SUCCnode.getState().getId()]=SUCCnode;
@@ -134,8 +154,8 @@ System.out.print("X: (" + X.getState().getX() + "," + X.getState().getY() + ")\n
 	public static void main(String[] args)
 	{
 		//Getting/setting input/output files
-		String inputfile = "boards/boards/board-2-2.txt";
-		String outputfile = "solutions/solution-2-2.txt";
+		String inputfile = "boards/boards/board-test.txt";
+		String outputfile = "solutions/solution-test.txt";
 		
 		//Reading initial state from input file
 		State initialState = new State();

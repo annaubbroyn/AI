@@ -4,6 +4,7 @@ import java.io.*;
 
 public class Node {
 	
+	public static int MAX = 1000;	//Maximum width and height of board
 	public static int ASTAR = 1;
 	public static int BFS = 2;
 	public static int DIJKSTRA = 3;
@@ -17,6 +18,8 @@ public class Node {
 	public Node kids;			//Kids (possible next nodes)
 	public Node nextInQUEUE;	//Next node to evaluate (either next in OPEN, CLOSED or successor-queue)
 	public Node nextSibling;	//Next sibling to evaluate
+	public Node finalOPEN;
+	public Node finalCLOSED;
 	
 	//Default constructor
 	public Node(){
@@ -28,6 +31,7 @@ public class Node {
 		kids = null;
 		nextInQUEUE = null;
 		nextSibling = null;
+		status = 0;
 	}
 
 	//Pushes newNode to this queue of nodes - SHOULD MAKE MORE EFFICIENT
@@ -93,10 +97,32 @@ public class Node {
 			PrintWriter writer = new PrintWriter(outputfile);
 
 			int board[][] = state.getBoard();
-			int pathX[] = new int[1000]; //x-position of path
-			int pathY[] = new int[1000]; //y-position of path
+			int pathX[] = new int[MAX]; //x-position of path
+			int pathY[] = new int[MAX]; //y-position of path
+			int openX[] = new int[MAX];
+			int openY[] = new int[MAX];
+			int closedX[] = new int[MAX];
+			int closedY[] = new int[MAX];
 			
-			//Initializing path to be at the final position and tracking path using best parent
+			//Getting all opened states
+			Node openNode = this.finalOPEN;
+			int openIndex = 0;
+			while(openNode.nextInQUEUE != null){
+				openX[openIndex] = openNode.getState().getX();
+				openY[openIndex++] = openNode.getState().getY();
+				openNode = openNode.nextInQUEUE;
+			}
+			
+			//Getting all closed states
+			Node closedNode = this.finalCLOSED;
+			int closedIndex = 0;
+			while(closedNode.nextInQUEUE != null){
+				closedX[closedIndex] = closedNode.getState().getX();
+				closedY[closedIndex++] = closedNode.getState().getY();
+				closedNode = closedNode.nextInQUEUE;
+			}
+ 			
+			//Getting path
 			Node path = this;
 			int pathIndex = 0;
 			while(path.parent != null){
@@ -104,9 +130,14 @@ public class Node {
 				pathY[pathIndex++] = path.getState().getY();
 				path = path.parent;
 			}
-			//Printing x- and y-coordinates of path in the beginning of file
+			
+			//Printing x- and y-coordinates of path, opened nodes and closed nodes
 			writer.println(Arrays.toString(Arrays.copyOfRange(pathX, 0, pathIndex)));
 			writer.println(Arrays.toString(Arrays.copyOfRange(pathY, 0, pathIndex)));
+			writer.println(Arrays.toString(Arrays.copyOfRange(openX, 0, openIndex)));
+			writer.println(Arrays.toString(Arrays.copyOfRange(openY, 0, openIndex)));
+			writer.println(Arrays.toString(Arrays.copyOfRange(closedX, 0, closedIndex)));
+			writer.println(Arrays.toString(Arrays.copyOfRange(closedY, 0, closedIndex)));
 			
 			//Printing board to file
 			for(int row = 0; row<state.getBoardHeight(); row++){
@@ -131,7 +162,6 @@ public class Node {
 	
 	//Updating the cost from root node to this node, and also updating all costs for all children
 	public void updateG(double g, int i){
-		System.out.print("i: " + i++ + "\n");
 		this.g = g;
 		Node kid = kids;
 		while(kid != null){

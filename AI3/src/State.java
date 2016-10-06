@@ -149,7 +149,7 @@ public class State {
 				return next;
 			}else
 				return null;
-		}else if(current.getX() == x+1 && current.getY() != -1){
+		}else if(current.getX() == x+1 && current.getY() == y){
 			if((y+1)<boardHeight && board[y+1][x] != -1){
 				next.setX(x);
 				next.setY(y+1);
