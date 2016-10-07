@@ -1,5 +1,5 @@
 
-public class AStar {
+public class AStar {	
 	
 	public static int MAXKIDS = 4;
 	
