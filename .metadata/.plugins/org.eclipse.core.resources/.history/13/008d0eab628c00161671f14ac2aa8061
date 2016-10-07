@@ -31,10 +31,7 @@ public class State {
 	}
 	
 	public void calcId(){
-		if(game == PATHFINDER)
-			id = PFState.calcId();
-		else if(game == RUSHHOUR)
-			id = RHState.calcId();
+		id = y*boardWidth + x;
 	}
 	
 	public int getId(){

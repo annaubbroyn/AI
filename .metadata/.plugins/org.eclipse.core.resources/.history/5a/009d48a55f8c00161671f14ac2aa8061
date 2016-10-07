@@ -191,7 +191,8 @@ public class Node {
 		succ.nextInQUEUE.setState(state.generateNextSuccessor(succ.getState()));
 		
 		//Generating the rest of the successor, succ, and placing it in the SUCC queue
-		while(succ.nextInQUEUE.getState() != null){
+		while(succ.nextInQUEUE.getState() != null)
+		{
 			succ = succ.nextInQUEUE;
 			succ.nextInQUEUE = new Node();
 			succ.nextInQUEUE.setState(state.generateNextSuccessor(succ.getState()));

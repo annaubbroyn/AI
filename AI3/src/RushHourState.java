@@ -5,36 +5,74 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class State {
+public class RushHourState {
 	
-	public static int PATHFINDER = 1;
-	public static int RUSHHOUR = 2;
-	
-	public PathFinderState PFState;
-	public RushHourState RHState;
-	public int game;
+	public static int MAX = 1000;	//Maximum width and height of board
+	private int x;					//x-coordinate of current position
+	private int y;					//y-coordinate of current position
+	private int finalX;				//x-coordinate of goal position
+	private int finalY;				//x-coordinate of goal position
+	private int[][] board;			//Board[row][col] containing the cost at each position
+	private int boardWidth;			//Width of board
+	private int boardHeight;		//Height of board
 	private int arcCost;			//The cost at the current position
 	private int id;					//The ID of the state. ID = y*boardWidth+x;
 	private int numOfStates;		//Total number of possible states = boardWidth*boardHeight
 	
 	//Initial state read from file
-	public void readState(String textfile, String game)
+	public void readState(String textfile)
 	{
-		if(game.equals("pathfinder")){
-			this.game = PATHFINDER;
-			PFState.readState(textfile);
-		}else if(game.equals("rushhour")){
-			this.game = RUSHHOUR;
-			RHState.readState(textfile);
-		}else
-			System.out.print("The game is unknown \n");
+	
+		Path boardpath = Paths.get(textfile);
+		
+		try {
+			List<String> lines = Files.readAllLines(boardpath);
+			String[] splitted;
+			int row = 0;
+			board = new int[MAX][MAX];
+			arcCost = 0;
+			for(String line:lines)
+			{
+				splitted = line.split("(?!^)");
+				boardWidth = splitted.length;
+				for(int col = 0; col < splitted.length; col++)
+				{
+					if(splitted[col].equals("."))
+						board[row][col] = 1;
+					else if(splitted[col].equals("#"))
+						board[row][col] = -1;
+					else if(splitted[col].equals("A")){
+						board[row][col] = -2;
+						x = col;
+						y = row;
+					}else if(splitted[col].equals("B")){
+						board[row][col] = -3;
+						finalX = col;
+						finalY = row;
+					}else if(splitted[col].equals("w"))
+						board[row][col] = 100;
+					else if(splitted[col].equals("m"))
+						board[row][col] = 50;
+					else if(splitted[col].equals("f"))
+						board[row][col] = 10;
+					else if(splitted[col].equals("g"))
+						board[row][col] = 5;
+					else if(splitted[col].equals("r"))
+						board[row][col] = 1;
+				}
+				row++;
+			}
+			boardHeight = row;
+			calcId();
+			calcNumOfStates();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 	
 	public void calcId(){
-		if(game == PATHFINDER)
-			id = PFState.calcId();
-		else if(game == RUSHHOUR)
-			id = RHState.calcId();
+		id = y*boardWidth + x;
 	}
 	
 	public int getId(){

@@ -84,14 +84,31 @@ public class AStar {
 			else
 				CLOSED.push(X);
 			X.setStatus(closed);
-			
+/*if(count++ == 0){
+Node openNode = OPEN;
+Node closedNode = CLOSED;
+System.out.println("\nX: (" + X.getState().getX() + "," + X.getState().getY() + ")\n");
+System.out.print("\nOPEN: \n");
+while(openNode != null && openNode.nextInQUEUE != null){
+	System.out.print("(" + openNode.getState().getX() + "," + openNode.getState().getY() + ")\n");
+	openNode = openNode.nextInQUEUE;
+}
+System.out.print("\nCLOSED: \n");
+while(closedNode != null && closedNode.nextInQUEUE != null){
+	System.out.print("(" + closedNode.getState().getX() + "," + closedNode.getState().getY() + ")\n");
+	closedNode = closedNode.nextInQUEUE;
+}
+}*/
 			//If X is a solution return the state X
 			if(isSolution(X)){
 				X.finalOPEN = OPEN;
 				X.finalCLOSED = CLOSED;
 				return X;
 			}
-
+			
+System.out.print(X.getState().getId() + ": (" + X.getState().getX() + "," + X.getState().getY() + ")\n");
+//System.out.print("numberofkkids: " + X.kids.length + "\n");
+			
 			//Generating all successors of X and queue them in SUCCnode
 			SUCCnode = X.generateAllSuccessors();
 

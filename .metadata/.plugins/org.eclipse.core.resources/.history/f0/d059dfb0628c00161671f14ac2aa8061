@@ -32,9 +32,9 @@ public class State {
 	
 	public void calcId(){
 		if(game == PATHFINDER)
-			id = PFState.calcId();
+			PFState.calcId();
 		else if(game == RUSHHOUR)
-			id = RHState.calcId();
+			RHState.calcId();
 	}
 	
 	public int getId(){

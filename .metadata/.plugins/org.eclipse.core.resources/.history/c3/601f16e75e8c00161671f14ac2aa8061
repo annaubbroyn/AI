@@ -16,6 +16,7 @@ public class Node {
 	private State state;		//A class describing the state of this node (position and so on)
 	private int status;			//Status which is either open or closed (or none of them)
 	public Node parent;			//Best parent (previous node)
+	//public Node kids;			//Kids (possible next nodes)
 	public Node nextInQUEUE;	//Next node to evaluate (either next in OPEN, CLOSED or successor-queue)
 	public Node nextSibling;	//Next sibling to evaluate
 	public Node finalOPEN;
@@ -40,13 +41,28 @@ public class Node {
 	//Pushes newNode to this queue of nodes - SHOULD MAKE MORE EFFICIENT
 	public void push(Node newNode){
 		Node iterator = this;
+		//While iterator is not the last node in the queue, to to next node in queue
 		while (iterator.nextInQUEUE != null)
 			iterator = iterator.nextInQUEUE;
+		//Inserting the new node at the end of the queue
 		iterator.nextInQUEUE = newNode;
+		//Letting the new node now be the last one in the queue (i.e. pointing at null)
 		newNode.nextInQUEUE = null;			
 	}
 	
-	//Pushes the new kid to the list of kids	
+	//Same function as push, only using siblings as queue
+/*	public void pushToKids(Node newKid){
+		Node iterator = kids;
+		while (iterator.nextSibling != null){
+			iterator = iterator.nextSibling;
+			if(iterator == this)
+				return;
+		}
+		iterator.nextSibling = newKid;
+		newKid.nextSibling = null;			
+	}
+	*/
+	
 	public void pushToKids(Node newKid){
 		int i = 0;
 		if(newKid == parent)
@@ -68,14 +84,12 @@ public class Node {
 			//If the new node has the lowest f value, place it in the beginning of this queue
 			if((method == ASTAR && f > newNode.getF()) || (method == DIJKSTRA && g > newNode.getG()))
 				newNode.nextInQUEUE = this;
-			
 			//Else if this queue only contain one node, place the new node at the end (second) of this queue 
 			else if(nextInQUEUE == null){
 				nextInQUEUE = newNode;
 				newNode.nextInQUEUE = null;
 			}
-			
-			//Else go through the queue and check if the next node in the queue has higher f value than new node
+			//Else go through the queue and checking if the next node in the queue has higher f value than new node
 			else{
 				double nextf = nextInQUEUE.getF();
 				double nextg = nextInQUEUE.getG();
@@ -94,7 +108,7 @@ public class Node {
 		
 	}
 	
-	//Printing board and path to output file - only valid for the pathfinding game
+	//Printing board and path to output file
 	public void print(String outputfile){
 		try {
 			PrintWriter writer = new PrintWriter(outputfile);
@@ -191,7 +205,8 @@ public class Node {
 		succ.nextInQUEUE.setState(state.generateNextSuccessor(succ.getState()));
 		
 		//Generating the rest of the successor, succ, and placing it in the SUCC queue
-		while(succ.nextInQUEUE.getState() != null){
+		while(succ.nextInQUEUE.getState() != null)
+		{
 			succ = succ.nextInQUEUE;
 			succ.nextInQUEUE = new Node();
 			succ.nextInQUEUE.setState(state.generateNextSuccessor(succ.getState()));
