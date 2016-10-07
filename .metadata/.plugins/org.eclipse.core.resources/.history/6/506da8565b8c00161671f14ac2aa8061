@@ -10,7 +10,7 @@ public class AStar {
 	
 	static int open = 1;
 	static int closed = 2;
-	static int METHOD = ASTAR; 
+	static int METHOD = DIJKSTRA; 
 	
 	//Checking if the node X is a solution of the problem
 	public static boolean isSolution(Node X){

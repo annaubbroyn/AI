@@ -30,9 +30,7 @@ public class Node {
 		f=0;
 		state = null;
 		parent = null;
-		kids = new int[MAXKIDS];
-		for(int i=0; i<MAXKIDS; i++)
-			kids[i] = -1;
+		kids = null;
 		nextInQUEUE = null;
 		nextSibling = null;
 		status = 0;
@@ -64,15 +62,7 @@ public class Node {
 	*/
 	
 	public void pushToKids(Node newKid){
-		int i = 0;
-		if(newKid == parent)
-			return;
-		while(i<MAXKIDS && kids[i] == -1){
-			if(kids[i] == newKid.getState().getId())
-				return;
-			i++;
-		}
-		kids[i-1] = newKid.getState().getId();
+		
 	}
 	
 	//Inserting new node in this queue which is sorted by ascending f-value 
@@ -124,7 +114,7 @@ public class Node {
 			//Getting all opened states
 			Node openNode = this.finalOPEN;
 			int openIndex = 0;
-			while(openNode != null && openNode.nextInQUEUE != null){
+			while(openNode.nextInQUEUE != null){
 				openX[openIndex] = openNode.getState().getX();
 				openY[openIndex++] = openNode.getState().getY();
 				openNode = openNode.nextInQUEUE;
@@ -178,15 +168,14 @@ public class Node {
 	}
 	
 	//Updating the cost from root node to this node, and also updating all costs for all children
-	public void updateG(double g, Node hashTable[]){
+	public void updateG(double g, int i){
 		this.g = g;
-		int i = 0;
-		Node kid = new Node();
-		while(i<MAXKIDS && kids[i]!=-1){
-			kid = hashTable[kids[i++]];
-			kid.updateG(g + kid.arcCost(this), hashTable);
+		Node kid = kids;
+		while(kid != null){
+			kid.updateG(g + kid.arcCost(this),i);
 			kid.calcH();
 			kid.updateF();
+			kid = kid.nextSibling;
 		}
 		
 	}

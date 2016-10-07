@@ -155,8 +155,8 @@ System.out.print(X.getState().getId() + ": (" + X.getState().getX() + "," + X.ge
 	public static void main(String[] args)
 	{
 		//Getting/setting input/output files
-		String inputfile = "boards/boards/board-1-2.txt";
-		String outputfile = "solutions/solution-1-2.txt";
+		String inputfile = "boards/boards/board-2-2.txt";
+		String outputfile = "solutions/solution-2-2.txt";
 		
 		//Reading initial state from input file
 		State initialState = new State();

@@ -1,8 +1,6 @@
 
 public class AStar {
 	
-	public static int MAXKIDS = 4;
-	
 	//Variables defining a node as open or closed 
 	public static int ASTAR = 1;
 	public static int BFS = 2;
@@ -10,7 +8,7 @@ public class AStar {
 	
 	static int open = 1;
 	static int closed = 2;
-	static int METHOD = ASTAR; 
+	static int METHOD = BFS; 
 	
 	//Checking if the node X is a solution of the problem
 	public static boolean isSolution(Node X){
@@ -31,14 +29,16 @@ public class AStar {
 	public static void propagatePathImprovements(Node P, Node hashTable[]){
 		Node C = new Node();
 		int i = 0;
-		while(i<MAXKIDS && P.kids[i]!=-1){
-			C = hashTable[P.kids[i++]];
+		while(i<MAXKIDS && P.kids[i]!=-1)
+		Node C = P.kids;
+		while (C != null){
 			if((P.getG() + C.arcCost(P)) < C.getG()){
 				C.parent = P;
-				C.updateG(P.getG() + C.arcCost(P), hashTable);
+				C.updateG(P.getG() + C.arcCost(P),0);
 				C.updateF();
-				propagatePathImprovements(C, hashTable);
+				propagatePathImprovements(C);
 			}
+			C = C.nextSibling;
 		}
 	}
 	
@@ -55,7 +55,7 @@ public class AStar {
 		//Initializing first node,X
 		Node X = new Node();
 		X.setState(initialState);
-		X.updateG(0,hashTable);
+		X.updateG(0,0);
 		X.calcH();
 		X.updateF();
 		
@@ -107,7 +107,6 @@ while(closedNode != null && closedNode.nextInQUEUE != null){
 			}
 			
 System.out.print(X.getState().getId() + ": (" + X.getState().getX() + "," + X.getState().getY() + ")\n");
-//System.out.print("numberofkkids: " + X.kids.length + "\n");
 			
 			//Generating all successors of X and queue them in SUCCnode
 			SUCCnode = X.generateAllSuccessors();
@@ -124,11 +123,14 @@ System.out.print(X.getState().getId() + ": (" + X.getState().getX() + "," + X.ge
 					SUCCnode = hashTable[SUCCnode.getState().getId()];
 				
 				//Pushing successor to X's kids
-				X.pushToKids(SUCCnode);
+				if(X.kids == null)
+					X.kids = SUCCnode;
+				else
+					X.pushToKids(SUCCnode);
 
 				//If successor is new attach, evaluate and insert in OPEN
 				if(SUCCnode.getStatus() != open && SUCCnode.getStatus() != closed){
-					attachAndEval(SUCCnode, X, hashTable);
+					attachAndEval(SUCCnode, X);
 					if(OPEN == null)
 						OPEN = SUCCnode;
 					else{
@@ -141,9 +143,9 @@ System.out.print(X.getState().getId() + ": (" + X.getState().getX() + "," + X.ge
 				}
 				//If successor already existed but X is a better parent, update the parent and costs 
 				else if((X.getG() + SUCCnode.arcCost(X)) < SUCCnode.getG()){
-					attachAndEval(SUCCnode, X, hashTable);
+					attachAndEval(SUCCnode, X);
 					if(SUCCnode.getStatus() == closed)
-						propagatePathImprovements(SUCCnode, hashTable);
+						propagatePathImprovements(SUCCnode);
 				}
 				
 				//Go to next successor of X
@@ -155,8 +157,8 @@ System.out.print(X.getState().getId() + ": (" + X.getState().getX() + "," + X.ge
 	public static void main(String[] args)
 	{
 		//Getting/setting input/output files
-		String inputfile = "boards/boards/board-1-2.txt";
-		String outputfile = "solutions/solution-1-2.txt";
+		String inputfile = "boards/boards/board-test.txt";
+		String outputfile = "solutions/solution-test.txt";
 		
 		//Reading initial state from input file
 		State initialState = new State();

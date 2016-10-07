@@ -10,7 +10,7 @@ public class AStar {
 	
 	static int open = 1;
 	static int closed = 2;
-	static int METHOD = ASTAR; 
+	static int METHOD = BFS; 
 	
 	//Checking if the node X is a solution of the problem
 	public static boolean isSolution(Node X){
@@ -155,8 +155,8 @@ System.out.print(X.getState().getId() + ": (" + X.getState().getX() + "," + X.ge
 	public static void main(String[] args)
 	{
 		//Getting/setting input/output files
-		String inputfile = "boards/boards/board-1-2.txt";
-		String outputfile = "solutions/solution-1-2.txt";
+		String inputfile = "boards/boards/board-test.txt";
+		String outputfile = "solutions/solution-test.txt";
 		
 		//Reading initial state from input file
 		State initialState = new State();

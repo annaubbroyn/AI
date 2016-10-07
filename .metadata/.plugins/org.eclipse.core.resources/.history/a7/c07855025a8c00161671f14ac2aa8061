@@ -124,7 +124,7 @@ public class Node {
 			//Getting all opened states
 			Node openNode = this.finalOPEN;
 			int openIndex = 0;
-			while(openNode != null && openNode.nextInQUEUE != null){
+			while(openNode.nextInQUEUE != null){
 				openX[openIndex] = openNode.getState().getX();
 				openY[openIndex++] = openNode.getState().getY();
 				openNode = openNode.nextInQUEUE;

@@ -1,5 +1,5 @@
 folder = 'C:\Users\Anna\Documents\GitHub\AI\AI3\solutions\';
-name = 'solution-test-2.txt';
+name = 'solution-1-2.txt';
 fullname = [folder name];
 data = importdata(fullname);
 [rows,m] = size(data);
@@ -95,7 +95,7 @@ set(markerGr,'MarkerFaceColor',grasslandColor, 'MarkerEdgeColor',grasslandColor)
 set(markerFo,'MarkerFaceColor',forestColor, 'MarkerEdgeColor',forestColor);
 set(markerMo,'MarkerFaceColor',mountainColor, 'MarkerEdgeColor',mountainColor);
 set(markerWa,'MarkerFaceColor',waterColor,'MarkerEdgeColor',waterColor);
-axis([0.5 cols-1.5 0.5 rows-1.5])
+axis([0.5 cols-1.5 0.5 rows-5.5])
 box off;
 set(gca,'xcolor',get(gcf,'color'));
 set(gca,'ycolor',get(gcf,'color'));

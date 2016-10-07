@@ -107,7 +107,7 @@ while(closedNode != null && closedNode.nextInQUEUE != null){
 			}
 			
 System.out.print(X.getState().getId() + ": (" + X.getState().getX() + "," + X.getState().getY() + ")\n");
-//System.out.print("numberofkkids: " + X.kids.length + "\n");
+System.out.print("numberofkkids: " + X.kids.length + "\n");
 			
 			//Generating all successors of X and queue them in SUCCnode
 			SUCCnode = X.generateAllSuccessors();
@@ -155,8 +155,8 @@ System.out.print(X.getState().getId() + ": (" + X.getState().getX() + "," + X.ge
 	public static void main(String[] args)
 	{
 		//Getting/setting input/output files
-		String inputfile = "boards/boards/board-1-2.txt";
-		String outputfile = "solutions/solution-1-2.txt";
+		String inputfile = "boards/boards/board-test.txt";
+		String outputfile = "solutions/solution-test.txt";
 		
 		//Reading initial state from input file
 		State initialState = new State();

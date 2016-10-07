@@ -65,13 +65,8 @@ public class Node {
 	
 	public void pushToKids(Node newKid){
 		int i = 0;
-		if(newKid == parent)
-			return;
-		while(i<MAXKIDS && kids[i] == -1){
-			if(kids[i] == newKid.getState().getId())
-				return;
+		while(i<MAXKIDS && kids[i] == -1)
 			i++;
-		}
 		kids[i-1] = newKid.getState().getId();
 	}
 	
@@ -124,7 +119,7 @@ public class Node {
 			//Getting all opened states
 			Node openNode = this.finalOPEN;
 			int openIndex = 0;
-			while(openNode != null && openNode.nextInQUEUE != null){
+			while(openNode.nextInQUEUE != null){
 				openX[openIndex] = openNode.getState().getX();
 				openY[openIndex++] = openNode.getState().getY();
 				openNode = openNode.nextInQUEUE;
