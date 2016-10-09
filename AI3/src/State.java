@@ -53,7 +53,8 @@ public class State {
 			arcCost = 0;
 			for(String line:lines)
 			{
-				splitted = line.split("(?!^)");	
+				splitted = line.split("(?!^)");
+				boardWidth = splitted.length;
 				for(int col = 0; col < splitted.length; col++)
 				{
 					if(splitted[col].equals("."))
@@ -155,13 +156,14 @@ public class State {
 			return generateFirstSuccessorPathFinder();
 		else if(game == RUSHHOUR)
 			return generateFirstSuccsessorRushHour();
-		else 
+		else
 			return null;
 	}
 	
 	public State generateFirstSuccessorPathFinder()
 	{
 		State first = new State();
+		first.game = PATHFINDER;
 		if(y>0 && board[y-1][x] != -1){
 			first.setX(x);
 			first.setY(y-1);
@@ -192,25 +194,73 @@ public class State {
 	
 	public State generateFirstSuccsessorRushHour(){
 		State first = new State();
-		int[][] 
+		first.game=RUSHHOUR;
+		first.setBoardHeight(boardHeight);
+		first.setBoardWidth(boardWidth);
+		first.setFinalX(finalX);
+		first.setFinalY(finalY);
+		int[][] newSpecification = new int[numberOfCars][4];
+		int[][] board = new int[boardHeight][boardWidth];
+		
+		for(int car = 0; car<numberOfCars; car++)
+			for(int i = 0; i<4; i++)
+				newSpecification[car][i] = specification[car][i];
+				
+		for(int i = 0; i<boardHeight; i++)
+			for(int j = 0; j<boardWidth; j++)
+				board[i][j] = this.board[i][j];
 		
 		for(int car = 0; car<numberOfCars; car++){
 			int vertical = specification[car][0];
 			int x = specification[car][1];
 			int y = specification[car][2];
 			int length = specification[car][3];
-			if(vertical == 0 && x > 0 && board[y][x-1] == 0){
-				
+			if(vertical == 0 && x>0 && board[y][x-1] == 0){
+				newSpecification[car][1] = x-1;
+				board[y][x-1] = 1;
+				board[y][x + length] = 0;
+				first.setBoard(board);
+				first.setSpecification(newSpecification);
+				first.calcId();
+				first.calcNumOfStates();
+				return first;
+			}else if( vertical == 0 && x+length<boardWidth && board[y][x+length+1] == 0){
+				newSpecification[car][1] = x+1;
+				board[y][x+length+1] = 1;
+				board[y][x] = 0;
+				first.setBoard(board);
+				first.setSpecification(newSpecification);
+				first.calcId();
+				first.calcNumOfStates();
+				return first;
+			}else if(vertical == 1 && y>0 && board[y-1][x] == 0){
+				newSpecification[car][2] = y-1;
+				board[y-1][x] = 1;
+				board[y+length][x] = 0;
+				first.setBoard(board);
+				first.setSpecification(newSpecification);
+				first.calcId();
+				return first;
+			}else if(vertical == 1 && y+length<boardHeight && board[y+length+1][x] == 0){
+				newSpecification[car][2] = y+1;
+				board[y+length+1][x] = 1;
+				board[y][x] = 0;
+				first.setBoard(board);
+				first.setSpecification(newSpecification);
+				first.calcId();
+				first.calcNumOfStates();
+				return first;
 			}
 		}
 		
-		return first;
+		return null;
 	}
 	
 	public State generateNextSuccessor(State current){
 		if(current == null)
 			return null;
 		State next = new State();
+		next.game = game;
 		next.setBoard(board);
 		next.setBoardWidth(boardWidth);
 		next.setBoardHeight(boardHeight);
@@ -262,6 +312,60 @@ public class State {
 		}
 		return null;
 	}
+	
+	
+	public State generateNextSuccsessorRushHour(State current){
+		if(current == null)
+				return null;
+						
+		State next = new State();
+		next.setBoardHeight(boardHeight);
+		next.setBoardWidth(boardWidth);
+		next.setFinalX(finalX);
+		next.setFinalY(finalY);
+		int[][] newSpecification = new int[numberOfCars][4];
+		for(int car = 0; car<numberOfCars; car++)
+			for(int i = 0; i<4; i++)
+				newSpecification[car][i] = current.getSpecification()[car][i];
+		
+		int[][] board = new int[boardHeight][boardWidth];
+		for(int i = 0; i<boardHeight; i++)
+			for(int j = 0; j<boardWidth; j++)
+				board[i][j] = this.board[i][j];
+		
+		for(int car = 0; car<numberOfCars; car++){
+			int x_p = specification[car][1];
+			int y_p = specification[car][2];
+			int length_p = specification[car][3];
+			int x_c = newSpecification[car][1];
+			int y_c = newSpecification[car][2];
+			
+			if(x_p == x_c && y_p == y_c)
+				continue;
+			
+			if(x_c<x_p && x_p+length_p<boardWidth && board[y_p][x_p+length_p+1]==0){
+				newSpecification[car][1] = x_p + 1;
+				board[y_p][x_p] = 0;
+				board[y_p][x_p+length_p+1] = 1;
+				next.setBoard(board);
+				next.setSpecification(newSpecification);
+				next.calcId();
+				next.calcNumOfStates();
+				return next;
+			}else if(x_c>x_p && x_p>0 && board[y_p][x_p+length_p+1]==0){
+				newSpecification[car][1] = x_p + 1;
+				board[y_p][x_p] = 0;
+				board[y_p][x_p+length_p+1] = 1;
+				next.setBoard(board);
+				next.setSpecification(newSpecification);
+				next.calcId();
+				next.calcNumOfStates();
+				return next;
+			}
+		}
+		return null;
+	}
+	
 	
 	public boolean isSolution(){
 		if(x == finalX && y == finalY)
@@ -337,5 +441,13 @@ public class State {
 	
 	public void setArcCost(int arcCost){
 		this.arcCost = arcCost;
+	}
+	
+	public int[][] getSpecification(){
+		return specification;
+	}
+	
+	public void setSpecification(int[][] specification){
+		this.specification = specification;
 	}
 }

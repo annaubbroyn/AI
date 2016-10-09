@@ -10,7 +10,7 @@ public class AStar {
 	
 	static int open = 1;
 	static int closed = 2;
-	static int METHOD = ASTAR; 
+	static int METHOD = DIJKSTRA; //Decides which method to use. 
 	
 	//Checking if the node X is a solution of the problem
 	public static boolean isSolution(Node X){
@@ -84,21 +84,7 @@ public class AStar {
 			else
 				CLOSED.push(X);
 			X.setStatus(closed);
-/*if(count++ == 0){
-Node openNode = OPEN;
-Node closedNode = CLOSED;
-System.out.println("\nX: (" + X.getState().getX() + "," + X.getState().getY() + ")\n");
-System.out.print("\nOPEN: \n");
-while(openNode != null && openNode.nextInQUEUE != null){
-	System.out.print("(" + openNode.getState().getX() + "," + openNode.getState().getY() + ")\n");
-	openNode = openNode.nextInQUEUE;
-}
-System.out.print("\nCLOSED: \n");
-while(closedNode != null && closedNode.nextInQUEUE != null){
-	System.out.print("(" + closedNode.getState().getX() + "," + closedNode.getState().getY() + ")\n");
-	closedNode = closedNode.nextInQUEUE;
-}
-}*/
+
 			//If X is a solution return the state X
 			if(isSolution(X)){
 				X.finalOPEN = OPEN;
@@ -106,12 +92,8 @@ while(closedNode != null && closedNode.nextInQUEUE != null){
 				return X;
 			}
 			
-System.out.print(X.getState().getId() + ": (" + X.getState().getX() + "," + X.getState().getY() + ")\n");
-//System.out.print("numberofkkids: " + X.kids.length + "\n");
-			
 			//Generating all successors of X and queue them in SUCCnode
 			SUCCnode = X.generateAllSuccessors();
-
 			//Run through all of X's successors SUCCnode
 			while(SUCCnode != null)
 			{	
@@ -155,12 +137,12 @@ System.out.print(X.getState().getId() + ": (" + X.getState().getX() + "," + X.ge
 	public static void main(String[] args)
 	{
 		//Getting/setting input/output files
-		String inputfile = "boards/boards/board-1-2.txt";
-		String outputfile = "solutions/solution-1-2.txt";
+		String inputfile = "boards/boards/board-test-3.txt";
+		String outputfile = "solutions/solution-test-3.txt";
 		
 		//Reading initial state from input file
 		State initialState = new State();
-		initialState.readState(inputfile);
+		initialState.readState(inputfile, "pathfinder");
 		
 		//Use A* algorithm to find a solution
 		Node mySolution = AStar_algorithm(initialState);

@@ -1,5 +1,5 @@
 folder = 'C:\Users\Anna\Documents\GitHub\AI\AI3\solutions\';
-name = 'solution-1-2.txt';
+name = 'solution-test-3.txt';
 fullname = [folder name];
 data = importdata(fullname);
 [rows,m] = size(data);

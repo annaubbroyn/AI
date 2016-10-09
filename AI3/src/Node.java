@@ -50,23 +50,10 @@ public class Node {
 		newNode.nextInQUEUE = null;			
 	}
 	
-	//Same function as push, only using siblings as queue
-/*	public void pushToKids(Node newKid){
-		Node iterator = kids;
-		while (iterator.nextSibling != null){
-			iterator = iterator.nextSibling;
-			if(iterator == this)
-				return;
-		}
-		iterator.nextSibling = newKid;
-		newKid.nextSibling = null;			
-	}
-	*/
-	
 	public void pushToKids(Node newKid){
 		int i = 0;
-		if(newKid == parent)
-			return;
+		//if(newKid == parent)
+		//	return;
 		while(i<MAXKIDS && kids[i] == -1){
 			if(kids[i] == newKid.getState().getId())
 				return;
