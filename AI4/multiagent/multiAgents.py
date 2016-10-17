@@ -114,38 +114,32 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
       Your minimax agent (question 2)
     """
-
-
 	
-    def maxValue(self, gameState):
-	inf = 10000
-	self.depth -= 1
-	if self.depth == 0:
+    def maxValue(self, gameState, depth):
+	inf = float('inf')
+	if depth == self.depth:
 		return self.evaluationFunction(gameState, action)
 	v = -inf
 	for action in gameState.getLegalActions(0):
-		v = min(v,self.minValue(gameState.generateSuccessor(0, action),1,0))
+		v = max(v,self.minValue(gameState.generateSuccessor(0, action), depth+1))
 	return v
 
 
 
-    def minValue(self, gameState,agentIndex,moveNumber):
-	
-	inf = 10000
-	if self.depth == 0:
-		return self.evaluationFunction(gameState, action)
+    def minValue(self, gameState, depth):
+	agentIndex = depth % gameState.getNumAgents()
+	inf = float('inf')
+	if depth == self.depth:
+		return self.evaluationFunction(gameState)
 	v = inf
+	
 	legalMoves = gameState.getLegalActions(agentIndex)
 	
 	for action in legalMoves:
-		if moveNumber == 1:
-			if agentIndex < gameState.getNumAgents()-1:
-				v = min(v,self.minValue(gameState.generateSuccessor(agentIndex+1, action),agentIndex+1,0))
-			else:
-				v = min(v,self.maxValue(gameState.generateSuccessor(0, action)))
+		if agentIndex == gameState.getNumAgents():
+			v = min(v,self.maxValue(gameState.generateSuccessor(agentIndex, action), depth+1))
 		else:
-			v = min(v,self.minValue(gameState.generateSuccessor(agentIndex, action),agentIndex,1))
-	
+			v = max(v,self.minValue(gameState.generateSuccessor(agentIndex, action), depth+1))
 	return v
 	
     def getAction(self, gameState):
@@ -169,7 +163,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 	
 	legalMoves = gameState.getLegalActions()
 	nextGameStates = [gameState.generateSuccessor(0,action) for action in legalMoves]
-	scores = [self.minValue(gameState,1,0) for gameState in nextGameStates]
+	scores = [self.minValue(gameState,0) for gameState in nextGameStates]
 	
   	bestScore = max(scores)
         bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
