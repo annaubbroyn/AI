@@ -114,65 +114,69 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
       Your minimax agent (question 2)
     """
+
+
 	
-	def maxValue(self, gameState):
-		inf = 10000
-		self.depth -= 1
-		if self.depth == 0:
-			return self.evaluationFunction(gameState, action)
-		v = -inf
-		legalMoves = gameState.getLegalActions(0)
-		for action in legalMoves:
-			v = min(v,self.minValue(gameState.generateSuccessor(0, action),1,0))
-		return v
+    def maxValue(self, gameState):
+	inf = 10000
+	self.depth -= 1
+	if self.depth == 0:
+		return self.evaluationFunction(gameState, action)
+	v = -inf
+	for action in gameState.getLegalActions(0):
+		v = min(v,self.minValue(gameState.generateSuccessor(0, action),1,0))
+	return v
 
-	def minValue(self, gameState, agentIndex, moveNumber):
-		inf = 10000
-		if self.depth == 0:
-			return self.evaluationFunction(gameState, action)
-		v = inf
-		legalMoves = gameState.getLegalActions(agentIndex)
-		for action in legalMoves:
-			if moveNumber == 1:
-				if agentIndex < gameState.getNumAgents()-1:
-					v = min(v,self.minValue(gameState.generateSuccessor(agentIndex+1, action),agentIndex+1,0))
-				else:
-					v = min(v,self.maxValue(gameState.generateSuccessor(0, action)))
+
+
+    def minValue(self, gameState,agentIndex,moveNumber):
+	
+	inf = 10000
+	if self.depth == 0:
+		return self.evaluationFunction(gameState, action)
+	v = inf
+	legalMoves = gameState.getLegalActions(agentIndex)
+	
+	for action in legalMoves:
+		if moveNumber == 1:
+			if agentIndex < gameState.getNumAgents()-1:
+				v = min(v,self.minValue(gameState.generateSuccessor(agentIndex+1, action),agentIndex+1,0))
 			else:
-				v = min(v,self.minValue(gameState.generateSuccessor(agentIndex, action),agentIndex,1))
+				v = min(v,self.maxValue(gameState.generateSuccessor(0, action)))
+		else:
+			v = min(v,self.minValue(gameState.generateSuccessor(agentIndex, action),agentIndex,1))
+	
+	return v
+	
+    def getAction(self, gameState):
+        """
+          Returns the minimax action from the current gameState using self.depth
+          and self.evaluationFunction.
 
-		return v
+          Here are some method calls that might be useful when implementing minimax.
 
-	def getAction(self, gameState):
-		"""
-		  Returns the minimax action from the current gameState using self.depth
-		  and self.evaluationFunction.
+          gameState.getLegalActions(agentIndex):
+            Returns a list of legal actions for an agent
+            agentIndex=0 means Pacman, ghosts are >= 1
 
-		  Here are some method calls that might be useful when implementing minimax.
+          gameState.generateSuccessor(agentIndex, action):
+            Returns the successor game state after an agent takes an action
 
-		  gameState.getLegalActions(agentIndex):
-			Returns a list of legal actions for an agent
-			agentIndex=0 means Pacman, ghosts are >= 1
-
-		  gameState.generateSuccessor(agentIndex, action):
-			Returns the successor game state after an agent takes an action
-
-		  gameState.getNumAgents():
-			Returns the total number of agents in the game
-		"""
-		"*** YOUR CODE HERE ***"
-
-		legalMoves = gameState.getLegalActions()
-		nextGameStates = [gameState.generateSuccessor(0,action) for action in legalMoves]
-		scores = [self.minValue(gameState,1,0) for gameState in nextGameStates]
-
-		bestScore = max(scores)
-		bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
-		chosenIndex = random.choice(bestIndices) # Pick randomly among the best
+          gameState.getNumAgents():
+            Returns the total number of agents in the game
+        """
+        "*** YOUR CODE HERE ***"
+	
+	legalMoves = gameState.getLegalActions()
+	nextGameStates = [gameState.generateSuccessor(0,action) for action in legalMoves]
+	scores = [self.minValue(gameState,1,0) for gameState in nextGameStates]
+	
+  	bestScore = max(scores)
+        bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
+        chosenIndex = random.choice(bestIndices) # Pick randomly among the best
 
 
-		return legalMoves[chosenIndex]
-
+        return legalMoves[chosenIndex]
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
