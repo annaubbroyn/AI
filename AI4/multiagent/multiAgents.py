@@ -152,35 +152,37 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
       Your minimax agent with alpha-beta pruning (question 3)
     """
-	
-    def maxValue(self, gameState, depth, alpha, beta):
+    self.alpha = alpha
+    self.beta = beta
+
+    def maxValue(self, gameState, depth):
 	if depth == self.depth*gameState.getNumAgents() or not gameState.getLegalActions():
 		return self.evaluationFunction(gameState)
 	v = -float('inf')
 	for action in gameState.getLegalActions(0):
-		v = max(v,self.minValue(gameState.generateSuccessor(0, action), depth+1, alpha, beta))
-		if v > beta: return v
-		alpha = max(alpha, v)
+		v = max(v,self.minValue(gameState.generateSuccessor(0, action), depth+1))
+		if v > self.beta: return v
+		self.alpha = max(self.alpha, v)
 	return v
 
-    def minValue(self, gameState, depth, alpha, beta):
+    def minValue(self, gameState, depth):
 	agentIndex = depth % gameState.getNumAgents()
 	if depth == self.depth*gameState.getNumAgents() or not gameState.getLegalActions():
 		return self.evaluationFunction(gameState)
 	v = float('inf')
 	for action in gameState.getLegalActions(agentIndex):
 		if agentIndex == gameState.getNumAgents()-1:
-			v = min(v,self.maxValue(gameState.generateSuccessor(agentIndex, action), depth+1, alpha, beta))
+			v = min(v,self.maxValue(gameState.generateSuccessor(agentIndex, action), depth+1))
 		else:
-			v = min(v,self.minValue(gameState.generateSuccessor(agentIndex, action), depth+1, alpha, beta))
-		if v < alpha: return v
-		beta = min(beta, v)
+			v = min(v,self.minValue(gameState.generateSuccessor(agentIndex, action), depth+1))
+		if v < self.alpha: return v
+		beta = min(self.beta, v)
 	return v
 	
     def getAction(self, gameState):
         legalMoves = gameState.getLegalActions()
         nextGameStates = [gameState.generateSuccessor(0,action) for action in legalMoves]
-        scores = [self.minValue(gameState,1, -float('inf'), float('inf')) for gameState in nextGameStates]
+        scores = [self.minValue(gameState,1) for gameState in nextGameStates]
         bestScore = max(scores)
         bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
