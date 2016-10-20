@@ -178,13 +178,21 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 	return v
 	
     def getAction(self, gameState):
-        legalMoves = gameState.getLegalActions()
+        legalMoves = gameState.getLegalActions(0)
         nextGameStates = [gameState.generateSuccessor(0,action) for action in legalMoves]
-        scores = [self.minValue(gameState,1, -float('inf'), float('inf')) for gameState in nextGameStates]
-        bestScore = max(scores)
-        bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
-        chosenIndex = random.choice(bestIndices) # Pick randomly among the best
-        return legalMoves[chosenIndex]
+	v = -float('inf')
+	alpha = -float('inf')
+	beta = float('inf')
+	bestAction = legalMoves[0]
+	for action in legalMoves:
+		v_0 = v
+		v = max(v,self.minValue(gameState.generateSuccessor(0, action), 1, alpha, beta))
+		if v > v_0:
+			bestAction = action
+		if v > beta: break
+		alpha = max(alpha, v)
+
+        return bestAction
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
