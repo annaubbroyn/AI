@@ -158,17 +158,16 @@ public class Assignment5 {
 			// domains of the CSP variables. The deep copy is required to
 			// ensure that any changes made to 'assignment' does not have any
 			// side effects elsewhere.
-			
 			VariablesToDomainsMapping assignment = this.deepCopyAssignment(this.domains);
-			
-			printSudokuSolution(assignment);
-			System.out.print("\n\n");
 
 			// Run AC-3 on all constraints in the CSP, to weed out all of the
 			// values that are not arc-consistent to begin with
 			this.inference(assignment, this.getAllArcs());
+
 			// Call backtrack with the partial assignment 'assignment'
-			return this.backtrack(assignment);
+			int numberOfCalled = 0;
+			int numberOfFailures = 0;
+			return this.backtrack(assignment, numberOfCalled, numberOfFailures);
 		}
 
 		/**
@@ -193,31 +192,27 @@ public class Assignment5 {
 		 * slate and not see any traces of the old assignments and inferences
 		 * that took place in previous iterations of the loop.
 		 */
-
-		public boolean isConsistent(VariablesToDomainsMapping assignment, String value){
-			//CODE
-			return true;
-		}
-		
-		public VariablesToDomainsMapping backtrack(VariablesToDomainsMapping assignment) {
-			System.out.print("In backtrack\n");
-			if(selectUnassignedVariable(assignment) == null)
+				
+		public VariablesToDomainsMapping backtrack(VariablesToDomainsMapping assignment, int numberOfCalled, int numberOfFailures) {
+			if(selectUnassignedVariable(assignment) == null){
+				System.out.print("# called: "+numberOfCalled+"\n");
+				System.out.print("# failure: "+numberOfFailures+"\n");
 				return assignment;
+			}
 			VariablesToDomainsMapping result = new VariablesToDomainsMapping();
-			String var = selectUnassignedVariable(assignment);
-			for(String value : this.domains.get(var)){
+			String var = selectUnassignedVariable(assignment);		
+			for(String value : assignment.get(var)){
 				VariablesToDomainsMapping assignmentCopy = this.deepCopyAssignment(assignment);
 				ArrayList<String> valueString = new ArrayList<String>();
 				valueString.add(value);
 				assignmentCopy.put(var, valueString);
 				if(inference(assignmentCopy, getAllNeighboringArcs(var))){
-					//Add inference to assignment
-					result = backtrack(assignmentCopy);
+					result = backtrack(assignmentCopy,++numberOfCalled, numberOfFailures);
 					if(result != null)
 						return result;
+					else
+						numberOfFailures++;
 				}
-				assignmentCopy.remove(var);
-				//Remove inference
 			}
 			return null;
 		}
@@ -230,7 +225,7 @@ public class Assignment5 {
 		 */
 		public String selectUnassignedVariable(VariablesToDomainsMapping assignment) {
 			for(String var : this.variables){
-				if(this.domains.get(var).size()>1)
+				if(assignment.get(var).size()>1)
 					return var;
 			}
 			return null;
@@ -247,7 +242,7 @@ public class Assignment5 {
 				Pair<String> xij = queue.get(0);
 				queue.remove(0);;
 				if(revise(assignment, xij.x, xij.y)){
-					if(this.domains.get(xij.x).size() == 0)
+					if(assignment.get(xij.x).size() == 0)
 						return false;
 					for(Pair<String> neighbor : this.getAllNeighboringArcs(xij.x)){
 						if(neighbor.x == xij.y)
@@ -271,23 +266,23 @@ public class Assignment5 {
 		public boolean revise(VariablesToDomainsMapping assignment, String i, String j) {
 			boolean revised = false;
 			
-			for(int index = 0; index<this.domains.get(i).size(); index ++){
-			//for(String x : this.domains.get(i)){
-				String x = this.domains.get(i).get(index);
+			for(int index = 0; index<assignment.get(i).size(); index ++){
+				String x = assignment.get(i).get(index);
 				boolean found = false;
-				for(String y : this.domains.get(j)){
-					Pair<String> xy = new Pair<String>(x, y);
-					if(this.constraints.get(i).get(j).contains(xy))
-						found = true;
+				for(String y : assignment.get(j)){
+					for(Pair<String> xy : this.constraints.get(i).get(j)){
+						if(xy.x.equals(x) && xy.y.equals(y)){
+							found = true;
+							break;
+						}
+					}
+					if(found) break;
 				}
-				if(found == false){
-					this.domains.get(i).remove(x);
+				if(!found){
+					assignment.get(i).remove(x);
 					index--;
-					//System.out.print("Domain size: " + this.domains.get(i).size() + "\n");
 					revised = true;
 				}
-				//System.out.print("x is " + x + "\n");
-				
 			}
 			return revised;
 		}
@@ -397,7 +392,10 @@ public class Assignment5 {
 	public static void printSudokuSolution(VariablesToDomainsMapping assignment) {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
-				System.out.print(assignment.get(row + "-" + col).get(0) + " ");
+				if(assignment.get(row + "-" + col).size()>1)
+					System.out.print(0 + " ");
+				else
+					System.out.print(assignment.get(row + "-" + col).get(0) + " ");
 				if (col == 2 || col == 5) {
 					System.out.print("| ");
 				}
@@ -409,11 +407,9 @@ public class Assignment5 {
 		}
 	}
 	
-	public static void main(String[] args)
-	{
-		CSP sudoku = createSudokuCSP("sudokus/easy.txt");
-		VariablesToDomainsMapping solution = sudoku.backtrackingSearch();
-		printSudokuSolution(solution);
+	public static void main(String[] args){
+		CSP sudoku = createSudokuCSP("sudokus/veryhard.txt");
+		printSudokuSolution(sudoku.backtrackingSearch());
 		
 	}	
 	
