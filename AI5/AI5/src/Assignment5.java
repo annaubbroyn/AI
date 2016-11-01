@@ -411,7 +411,7 @@ public class Assignment5 {
 	
 	public static void main(String[] args)
 	{
-		CSP sudoku = createSudokuCSP("AI5/sudokus/easy.txt");
+		CSP sudoku = createSudokuCSP("sudokus/easy.txt");
 		VariablesToDomainsMapping solution = sudoku.backtrackingSearch();
 		printSudokuSolution(solution);
 		
