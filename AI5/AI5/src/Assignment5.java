@@ -158,19 +158,15 @@ public class Assignment5 {
 			// domains of the CSP variables. The deep copy is required to
 			// ensure that any changes made to 'assignment' does not have any
 			// side effects elsewhere.
-			if(this.domains == null)
-				System.out.print("is null \n");
-			else{
-				printSudokuSolution(this.domains);
-				System.out.print("\n\n");
-			}
 			
 			VariablesToDomainsMapping assignment = this.deepCopyAssignment(this.domains);
+			
+			printSudokuSolution(assignment);
+			System.out.print("\n\n");
 
 			// Run AC-3 on all constraints in the CSP, to weed out all of the
 			// values that are not arc-consistent to begin with
 			this.inference(assignment, this.getAllArcs());
-
 			// Call backtrack with the partial assignment 'assignment'
 			return this.backtrack(assignment);
 		}
@@ -204,21 +200,23 @@ public class Assignment5 {
 		}
 		
 		public VariablesToDomainsMapping backtrack(VariablesToDomainsMapping assignment) {
+			System.out.print("In backtrack\n");
 			if(selectUnassignedVariable(assignment) == null)
 				return assignment;
 			VariablesToDomainsMapping result = new VariablesToDomainsMapping();
 			String var = selectUnassignedVariable(assignment);
 			for(String value : this.domains.get(var)){
+				VariablesToDomainsMapping assignmentCopy = this.deepCopyAssignment(assignment);
 				ArrayList<String> valueString = new ArrayList<String>();
 				valueString.add(value);
-				assignment.put(var, valueString);
-				if(inference(assignment, getAllNeighboringArcs(var))){
+				assignmentCopy.put(var, valueString);
+				if(inference(assignmentCopy, getAllNeighboringArcs(var))){
 					//Add inference to assignment
-					result = backtrack(assignment);
+					result = backtrack(assignmentCopy);
 					if(result != null)
-						return null;
+						return result;
 				}
-				assignment.remove(var);
+				assignmentCopy.remove(var);
 				//Remove inference
 			}
 			return null;
@@ -284,10 +282,11 @@ public class Assignment5 {
 				}
 				if(found == false){
 					this.domains.get(i).remove(x);
-					System.out.print("size: " + this.domains.get(i).size());
+					index--;
+					//System.out.print("Domain size: " + this.domains.get(i).size() + "\n");
 					revised = true;
 				}
-				System.out.print("x is " + x + "\n");
+				//System.out.print("x is " + x + "\n");
 				
 			}
 			return revised;
@@ -412,8 +411,9 @@ public class Assignment5 {
 	
 	public static void main(String[] args)
 	{
-		CSP sudoku = createSudokuCSP("sudokus/easy.txt");
-		printSudokuSolution(sudoku.backtrackingSearch());
+		CSP sudoku = createSudokuCSP("AI5/sudokus/easy.txt");
+		VariablesToDomainsMapping solution = sudoku.backtrackingSearch();
+		printSudokuSolution(solution);
 		
 	}	
 	
