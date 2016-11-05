@@ -1,5 +1,11 @@
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.channels.FileChannel;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -167,7 +173,7 @@ public class Assignment5 {
 			// Call backtrack with the partial assignment 'assignment'
 			int numberOfCalled = 0;
 			int numberOfFailures = 0;
-			return this.backtrack(assignment, numberOfCalled, numberOfFailures);
+			return this.backtrack(assignment, ++numberOfCalled, numberOfFailures);
 		}
 
 		/**
@@ -196,7 +202,9 @@ public class Assignment5 {
 		public VariablesToDomainsMapping backtrack(VariablesToDomainsMapping assignment, int numberOfCalled, int numberOfFailures) {
 			if(selectUnassignedVariable(assignment) == null){
 				System.out.print("# called: "+numberOfCalled+"\n");
+				System.out.println();
 				System.out.print("# failure: "+numberOfFailures+"\n");
+				System.out.println();
 				return assignment;
 			}
 			VariablesToDomainsMapping result = new VariablesToDomainsMapping();
@@ -407,9 +415,16 @@ public class Assignment5 {
 		}
 	}
 	
-	public static void main(String[] args){
-		CSP sudoku = createSudokuCSP("sudokus/veryhard.txt");
+	public static void main(String[] args) throws IOException{
+		String file = "veryhard";
+		//FileChannel out = FileChannel.open(Paths.get("AI5/result.txt"), StandardOpenOption.APPEND,StandardOpenOption.WRITE);
+		//System.setOut(new PrintStream(new FileOutputStream("AI5/result.txt")));
+		System.setOut(new PrintStream(new FileOutputStream("AI5/result.txt",true)));
+		System.out.print(file + ":\n");
+		System.out.println();
+		CSP sudoku = createSudokuCSP("AI5/sudokus/"+file+".txt");
 		printSudokuSolution(sudoku.backtrackingSearch());
+		System.out.println();
 		
 	}	
 	
